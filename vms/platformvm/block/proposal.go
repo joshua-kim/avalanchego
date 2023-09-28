@@ -17,7 +17,7 @@ var (
 )
 
 type BanffProposal struct {
-	ApricotProposal `serialize:"true"`
+	Tx *txs.Tx `serialize:"true" json:"tx"`
 	// Transactions is currently unused. This is populated so that introducing
 	// them in the future will not require a codec change.
 	//
@@ -26,14 +26,18 @@ type BanffProposal struct {
 	Transactions []*txs.Tx `serialize:"true" json:"-"`
 }
 
-func (b *BanffProposal) InitCtx(ctx *snow.Context) {
+func (b BanffProposal) initialize(bytes []byte) error {
+	return nil
+}
+
+func (b BanffProposal) InitCtx(ctx *snow.Context) {
 	for _, tx := range b.Transactions {
 		tx.Unsigned.InitCtx(ctx)
 	}
-	b.ApricotProposal.InitCtx(ctx)
+	b.Tx.Unsigned.InitCtx(ctx)
 }
 
-func (b *BanffProposal) Visit(v Visitor) error {
+func (b BanffProposal) Visit(v Visitor) error {
 	return v.BanffProposalBlock(b)
 }
 
@@ -41,22 +45,18 @@ func NewBanffProposalBlock(timestamp time.Time, parentID ids.ID, height uint64, 
 	blk := Banff{
 		Block: Block{
 			Interface: &BanffProposal{
-				Transactions: nil,
-				ApricotProposal: ApricotProposal{
-					Tx: tx,
-				},
+				Tx: tx,
 			},
 			Data: Data{
 				ID:     ids.ID{},
 				Parent: parentID,
 				Height: height,
 			},
-			Bytes: nil,
 		},
 		Time: timestamp,
 	}
 
-	return blk, initializeBanff(blk)
+	return blk, blk.initialize(blk.Bytes)
 }
 
 type ApricotProposal struct {
@@ -88,12 +88,10 @@ func NewApricotProposal(
 			Tx: tx,
 		},
 		Data: Data{
-			ID:     ids.ID{},
 			Parent: parentID,
 			Height: height,
 		},
-		Bytes: nil,
 	}
 
-	return blk, initialize(blk)
+	return blk, blk.initialize(blk.Bytes)
 }

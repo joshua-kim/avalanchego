@@ -23,7 +23,7 @@ var (
 
 // Exported for testing in platformvm package.
 type Block struct {
-	block.Interface
+	block.Banff
 	manager *manager
 }
 

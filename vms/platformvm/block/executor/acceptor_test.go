@@ -282,8 +282,8 @@ func TestAcceptorVisitCommitBlock(t *testing.T) {
 	parentOnCommitState := state.NewMockDiff(ctrl)
 	parentStatelessBlk := block.NewMockBlock(ctrl)
 	parentState := &blockState{
-		statelessBlock: parentStatelessBlk,
-		onAcceptState:  parentOnAcceptState,
+		blockData:     parentStatelessBlk,
+		onAcceptState: parentOnAcceptState,
 		proposalBlockState: proposalBlockState{
 			onAbortState:  parentOnAbortState,
 			onCommitState: parentOnCommitState,
@@ -299,7 +299,7 @@ func TestAcceptorVisitCommitBlock(t *testing.T) {
 		s.EXPECT().SetLastAccepted(parentID).Times(1),
 		parentStatelessBlk.EXPECT().Height().Return(blk.Height()-1).Times(1),
 		s.EXPECT().SetHeight(blk.Height()-1).Times(1),
-		s.EXPECT().AddStatelessBlock(parentState.statelessBlock).Times(1),
+		s.EXPECT().AddStatelessBlock(parentState.blockData).Times(1),
 
 		s.EXPECT().SetLastAccepted(blkID).Times(1),
 		s.EXPECT().SetHeight(blk.Height()).Times(1),
@@ -323,7 +323,7 @@ func TestAcceptorVisitCommitBlock(t *testing.T) {
 		s.EXPECT().SetLastAccepted(parentID).Times(1),
 		parentStatelessBlk.EXPECT().Height().Return(blk.Height()-1).Times(1),
 		s.EXPECT().SetHeight(blk.Height()-1).Times(1),
-		s.EXPECT().AddStatelessBlock(parentState.statelessBlock).Times(1),
+		s.EXPECT().AddStatelessBlock(parentState.blockData).Times(1),
 
 		s.EXPECT().SetLastAccepted(blkID).Times(1),
 		s.EXPECT().SetHeight(blk.Height()).Times(1),
@@ -373,8 +373,8 @@ func TestAcceptorVisitAbortBlock(t *testing.T) {
 	parentOnCommitState := state.NewMockDiff(ctrl)
 	parentStatelessBlk := block.NewMockBlock(ctrl)
 	parentState := &blockState{
-		statelessBlock: parentStatelessBlk,
-		onAcceptState:  parentOnAcceptState,
+		blockData:     parentStatelessBlk,
+		onAcceptState: parentOnAcceptState,
 		proposalBlockState: proposalBlockState{
 			onAbortState:  parentOnAbortState,
 			onCommitState: parentOnCommitState,
@@ -390,7 +390,7 @@ func TestAcceptorVisitAbortBlock(t *testing.T) {
 		s.EXPECT().SetLastAccepted(parentID).Times(1),
 		parentStatelessBlk.EXPECT().Height().Return(blk.Height()-1).Times(1),
 		s.EXPECT().SetHeight(blk.Height()-1).Times(1),
-		s.EXPECT().AddStatelessBlock(parentState.statelessBlock).Times(1),
+		s.EXPECT().AddStatelessBlock(parentState.blockData).Times(1),
 
 		s.EXPECT().SetLastAccepted(blkID).Times(1),
 		s.EXPECT().SetHeight(blk.Height()).Times(1),
@@ -415,7 +415,7 @@ func TestAcceptorVisitAbortBlock(t *testing.T) {
 		s.EXPECT().SetLastAccepted(parentID).Times(1),
 		parentStatelessBlk.EXPECT().Height().Return(blk.Height()-1).Times(1),
 		s.EXPECT().SetHeight(blk.Height()-1).Times(1),
-		s.EXPECT().AddStatelessBlock(parentState.statelessBlock).Times(1),
+		s.EXPECT().AddStatelessBlock(parentState.blockData).Times(1),
 
 		s.EXPECT().SetLastAccepted(blkID).Times(1),
 		s.EXPECT().SetHeight(blk.Height()).Times(1),

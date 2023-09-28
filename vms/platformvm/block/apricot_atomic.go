@@ -22,10 +22,9 @@ func NewApricotAtomic(parentID ids.ID, height uint64, tx *txs.Tx) (Block, error)
 			Parent: parentID,
 			Height: height,
 		},
-		Bytes: nil,
 	}
 
-	return blk, initialize(blk)
+	return blk, blk.initialize(blk.Bytes)
 }
 
 // ApricotAtomic being accepted results in the atomic transaction contained
@@ -34,17 +33,17 @@ type ApricotAtomic struct {
 	Tx *txs.Tx `serialize:"true" json:"tx"`
 }
 
-func (b *ApricotAtomic) initialize(bytes []byte) error {
+func (b ApricotAtomic) initialize([]byte) error {
 	if err := b.Tx.Initialize(txs.Codec); err != nil {
 		return fmt.Errorf("failed to initialize tx: %w", err)
 	}
 	return nil
 }
 
-func (b *ApricotAtomic) InitCtx(ctx *snow.Context) {
+func (b ApricotAtomic) InitCtx(ctx *snow.Context) {
 	b.Tx.Unsigned.InitCtx(ctx)
 }
 
-func (b *ApricotAtomic) Visit(v Visitor) error {
+func (b ApricotAtomic) Visit(v Visitor) error {
 	return v.ApricotAtomicBlock(b)
 }

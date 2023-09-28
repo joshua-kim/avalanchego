@@ -39,7 +39,7 @@ func (r *rejector) ApricotAbortBlock(b *block.ApricotAbort) error {
 	return r.rejectBlock(b, "apricot abort")
 }
 
-func (r *rejector) ApricotCommitBlock(b *block.ApricotCommitBlock) error {
+func (r *rejector) ApricotCommitBlock(b *block.ApricotCommit) error {
 	return r.rejectBlock(b, "apricot commit")
 }
 
@@ -47,7 +47,7 @@ func (r *rejector) ApricotProposalBlock(b *block.ApricotProposal) error {
 	return r.rejectBlock(b, "apricot proposal")
 }
 
-func (r *rejector) ApricotStandardBlock(b *block.ApricotStandardBlock) error {
+func (r *rejector) ApricotStandardBlock(b *block.ApricotStandard) error {
 	return r.rejectBlock(b, "apricot standard")
 }
 

@@ -14,20 +14,20 @@ import (
 
 var (
 	_ Interface = (*BanffStandard)(nil)
-	_ Interface = (*ApricotStandardBlock)(nil)
+	_ Interface = (*ApricotStandard)(nil)
 )
 
 type BanffStandard struct {
 	Transactions []*txs.Tx `serialize:"true" json:"txs"`
 }
 
-func (*BanffStandard) InitCtx(*snow.Context) {}
+func (BanffStandard) InitCtx(*snow.Context) {}
 
-func (*BanffStandard) initialize([]byte) error {
+func (BanffStandard) initialize([]byte) error {
 	return nil
 }
 
-func (b *BanffStandard) Visit(v Visitor) error {
+func (b BanffStandard) Visit(v Visitor) error {
 	return v.BanffStandardBlock(b)
 }
 
@@ -49,14 +49,15 @@ func NewBanff(
 		},
 		Time: time,
 	}
-	return blk, initializeBanff(blk)
+
+	return blk, blk.initialize(blk.Bytes)
 }
 
-type ApricotStandardBlock struct {
+type ApricotStandard struct {
 	Transactions []*txs.Tx `serialize:"true" json:"txs"`
 }
 
-func (b *ApricotStandardBlock) initialize(bytes []byte) error {
+func (b ApricotStandard) initialize([]byte) error {
 	for _, tx := range b.Transactions {
 		if err := tx.Initialize(txs.Codec); err != nil {
 			return fmt.Errorf("failed to sign block: %w", err)
@@ -65,13 +66,13 @@ func (b *ApricotStandardBlock) initialize(bytes []byte) error {
 	return nil
 }
 
-func (b *ApricotStandardBlock) InitCtx(ctx *snow.Context) {
+func (b ApricotStandard) InitCtx(ctx *snow.Context) {
 	for _, tx := range b.Transactions {
 		tx.Unsigned.InitCtx(ctx)
 	}
 }
 
-func (b *ApricotStandardBlock) Visit(v Visitor) error {
+func (b ApricotStandard) Visit(v Visitor) error {
 	return v.ApricotStandardBlock(b)
 }
 
@@ -84,7 +85,7 @@ func NewApricotStandard(
 	txs []*txs.Tx,
 ) (Block, error) {
 	blk := Block{
-		Interface: &ApricotStandardBlock{
+		Interface: &ApricotStandard{
 			Transactions: txs,
 		},
 		Data: Data{
@@ -93,5 +94,5 @@ func NewApricotStandard(
 		},
 	}
 
-	return blk, initialize(blk)
+	return blk, blk.initialize(blk.Bytes)
 }

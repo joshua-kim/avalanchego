@@ -43,7 +43,7 @@ func TestStandardBlocks(t *testing.T) {
 		require.Equal(apricotStandardBlk.Parent(), parsed.Parent())
 		require.Equal(apricotStandardBlk.Height(), parsed.Height())
 
-		require.IsType(&ApricotStandardBlock{}, parsed)
+		require.IsType(&ApricotStandard{}, parsed)
 		require.Equal(txs, parsed.Txs())
 
 		// check that banff standard block can be built and parsed

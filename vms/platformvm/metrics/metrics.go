@@ -24,7 +24,7 @@ type Metrics interface {
 	// Mark that an option vote that we initially preferred was rejected.
 	MarkOptionVoteLost()
 	// Mark that the given block was accepted.
-	MarkAccepted(block.Interface) error
+	MarkAccepted(block.Data) error
 	// Mark that a validator set was created.
 	IncValidatorSetsCreated()
 	// Mark that a validator set was cached.
@@ -156,7 +156,7 @@ func (m *metrics) MarkOptionVoteLost() {
 	m.numVotesLost.Inc()
 }
 
-func (m *metrics) MarkAccepted(b block.Interface) error {
+func (m *metrics) MarkAccepted(b block.Data) error {
 	return b.Visit(m.blockMetrics)
 }
 

@@ -19,8 +19,8 @@ func TestOptionsUnexpectedBlockType(t *testing.T) {
 		&block.BanffCommit{},
 		&block.BanffStandard{},
 		&block.ApricotAbort{},
-		&block.ApricotCommitBlock{},
-		&block.ApricotStandardBlock{},
+		&block.ApricotCommit{},
+		&block.ApricotStandard{},
 		&block.ApricotAtomic{},
 	}
 

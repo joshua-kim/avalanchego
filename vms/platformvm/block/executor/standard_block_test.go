@@ -51,8 +51,8 @@ func TestApricotStandardBlockTimeVerification(t *testing.T) {
 	// store parent block, with relevant quantities
 	onParentAccept := state.NewMockDiff(ctrl)
 	env.blkManager.(*manager).blkIDToState[parentID] = &blockState{
-		statelessBlock: apricotParentBlk,
-		onAcceptState:  onParentAccept,
+		blockData:     apricotParentBlk,
+		onAcceptState: onParentAccept,
 	}
 	env.blkManager.(*manager).lastAccepted = parentID
 
@@ -113,9 +113,9 @@ func TestBanffStandardBlockTimeVerification(t *testing.T) {
 	onParentAccept := state.NewMockDiff(ctrl)
 	chainTime := env.clk.Time().Truncate(time.Second)
 	env.blkManager.(*manager).blkIDToState[parentID] = &blockState{
-		statelessBlock: banffParentBlk,
-		onAcceptState:  onParentAccept,
-		timestamp:      chainTime,
+		blockData:     banffParentBlk,
+		onAcceptState: onParentAccept,
+		timestamp:     chainTime,
 	}
 	env.blkManager.(*manager).lastAccepted = parentID
 	env.mockedState.EXPECT().GetLastAccepted().Return(parentID).AnyTimes()

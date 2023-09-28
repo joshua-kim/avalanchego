@@ -137,7 +137,7 @@ type State interface {
 	GetStatelessBlock(blockID ids.ID) (block.Interface, error)
 
 	// Invariant: [block] is an accepted block.
-	AddStatelessBlock(block block.Interface)
+	AddStatelessBlock(block block.Data)
 
 	GetBlockIDAtHeight(height uint64) (ids.ID, error)
 

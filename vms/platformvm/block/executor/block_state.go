@@ -29,8 +29,8 @@ type proposalBlockState struct {
 type blockState struct {
 	standardBlockState
 	proposalBlockState
-	statelessBlock block.Interface
-	onAcceptState  state.Diff
+	blockData     block.Data
+	onAcceptState state.Diff
 
 	timestamp      time.Time
 	atomicRequests map[ids.ID]*atomic.Requests

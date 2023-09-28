@@ -49,14 +49,16 @@ func TestNewBanffStandardBlock(t *testing.T) {
 	)
 	require.NoError(err)
 
-	// Make sure the block and tx are initialized
-	require.NotEmpty(blk.Bytes())
-	require.NotEmpty(blk.Transactions[0].Bytes())
-	require.NotEqual(ids.Empty, blk.Transactions[0].ID())
-	require.Equal(tx.Bytes(), blk.Transactions[0].Bytes())
-	require.Equal(timestamp, blk.Timestamp())
-	require.Equal(parentID, blk.Parent())
-	require.Equal(height, blk.Height())
+	banffStandardBlk, ok := blk.Interface.(BanffStandard)
+	require.True(ok)
+
+	require.NotEmpty(blk.Bytes)
+	require.NotEmpty(banffStandardBlk.Transactions[0].Bytes())
+	require.NotEqual(ids.Empty, banffStandardBlk.Transactions[0].ID())
+	require.Equal(tx.Bytes(), banffStandardBlk.Transactions[0].Bytes())
+	require.Equal(timestamp, blk.Time)
+	require.Equal(parentID, blk.Parent)
+	require.Equal(height, blk.Height)
 }
 
 func TestNewApricotStandardBlock(t *testing.T) {
@@ -90,11 +92,14 @@ func TestNewApricotStandardBlock(t *testing.T) {
 	)
 	require.NoError(err)
 
+	apricotStandard, ok := blk.Interface.(ApricotStandard)
+	require.True(ok)
+
 	// Make sure the block and tx are initialized
-	require.NotEmpty(blk.Bytes())
-	require.NotEmpty(blk.Transactions[0].Bytes())
-	require.NotEqual(ids.Empty, blk.Transactions[0].ID())
-	require.Equal(tx.Bytes(), blk.Transactions[0].Bytes())
-	require.Equal(parentID, blk.Parent())
-	require.Equal(height, blk.Height())
+	require.NotEmpty(blk.Bytes)
+	require.NotEmpty(apricotStandard.Transactions[0].Bytes())
+	require.NotEqual(ids.Empty, apricotStandard.Transactions[0].ID)
+	require.Equal(tx.Bytes(), apricotStandard.Transactions[0].Bytes)
+	require.Equal(parentID, blk.Parent)
+	require.Equal(height, blk.Height)
 }

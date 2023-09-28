@@ -59,7 +59,7 @@ func (*options) ApricotAbortBlock(*block.ApricotAbort) error {
 	return snowman.ErrNotOracle
 }
 
-func (*options) ApricotCommitBlock(*block.ApricotCommitBlock) error {
+func (*options) ApricotCommitBlock(*block.ApricotCommit) error {
 	return snowman.ErrNotOracle
 }
 
@@ -86,7 +86,7 @@ func (o *options) ApricotProposalBlock(b *block.ApricotProposal) error {
 	return nil
 }
 
-func (*options) ApricotStandardBlock(*block.ApricotStandardBlock) error {
+func (*options) ApricotStandardBlock(*block.ApricotStandard) error {
 	return snowman.ErrNotOracle
 }
 

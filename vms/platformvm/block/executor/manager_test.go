@@ -50,7 +50,7 @@ func TestGetBlock(t *testing.T) {
 	{
 		// Case: block is in memory
 		manager.backend.blkIDToState[statelessBlk.ID()] = &blockState{
-			statelessBlock: statelessBlk,
+			blockData: statelessBlk,
 		}
 		gotBlk, err := manager.GetBlock(statelessBlk.ID())
 		require.NoError(err)

@@ -156,7 +156,7 @@ func TestBlockOptions(t *testing.T) {
 					manager:   manager,
 				}
 			},
-			expectedPreferenceType: &block.ApricotCommitBlock{},
+			expectedPreferenceType: &block.ApricotCommit{},
 		},
 		{
 			name: "apricot proposal block; abort preferred",

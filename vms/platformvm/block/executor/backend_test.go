@@ -79,7 +79,7 @@ func TestBackendGetBlock(t *testing.T) {
 			state: state,
 			blkIDToState: map[ids.ID]*blockState{
 				blkID1: {
-					statelessBlock: statelessBlk,
+					blockData: statelessBlk,
 				},
 			},
 		}

@@ -8,7 +8,6 @@ import (
 
 	"github.com/ava-labs/avalanchego/ids"
 	"github.com/ava-labs/avalanchego/snow"
-	"github.com/ava-labs/avalanchego/vms/platformvm/txs"
 )
 
 var (
@@ -32,7 +31,7 @@ func NewBanffAbort(
 		Time: time,
 	}
 
-	return blk, initializeBanff(blk)
+	return blk, blk.initialize(blk.Bytes)
 }
 
 type BanffAbort struct{}
@@ -64,7 +63,7 @@ func NewApricotAbort(
 		},
 	}
 
-	return blk, initialize(blk)
+	return blk, blk.initialize(blk.Bytes)
 }
 
 type ApricotAbort struct{}
@@ -74,10 +73,6 @@ func (b *ApricotAbort) initialize(bytes []byte) error {
 }
 
 func (*ApricotAbort) InitCtx(*snow.Context) {}
-
-func (*ApricotAbort) Txs() []*txs.Tx {
-	return nil
-}
 
 func (b *ApricotAbort) Visit(v Visitor) error {
 	return v.ApricotAbortBlock(b)

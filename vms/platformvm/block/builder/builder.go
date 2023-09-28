@@ -184,17 +184,17 @@ func (b *builder) BuildBlock(context.Context) (snowman.Block, error) {
 
 // Returns the block we want to build and issue.
 // Only modifies state to remove expired proposal txs.
-func (b *builder) buildBlock() (block.Interface, error) {
+func (b *builder) buildBlock() (block.Banff, error) {
 	// Get the block to build on top of and retrieve the new block's context.
 	preferred, err := b.Preferred()
 	if err != nil {
-		return nil, err
+		return block.Banff{}, err
 	}
 	preferredID := preferred.ID()
 	nextHeight := preferred.Height() + 1
 	preferredState, ok := b.blkManager.GetState(preferredID)
 	if !ok {
-		return nil, fmt.Errorf("%w: %s", state.ErrMissingParentState, preferredID)
+		return block.Banff{}, fmt.Errorf("%w: %s", state.ErrMissingParentState, preferredID)
 	}
 
 	timestamp := b.txExecutorBackend.Clk.Time()
@@ -205,7 +205,7 @@ func (b *builder) buildBlock() (block.Interface, error) {
 
 	nextStakerChangeTime, err := txexecutor.GetNextStakerChangeTime(preferredState)
 	if err != nil {
-		return nil, fmt.Errorf("could not calculate next staker change time: %w", err)
+		return block.Banff{}, fmt.Errorf("could not calculate next staker change time: %w", err)
 	}
 
 	// timeWasCapped means that [timestamp] was reduced to
@@ -345,18 +345,18 @@ func buildBlock(
 	timestamp time.Time,
 	forceAdvanceTime bool,
 	parentState state.Chain,
-) (block.Interface, error) {
+) (block.Banff, error) {
 	// Try rewarding stakers whose staking period ends at the new chain time.
 	// This is done first to prioritize advancing the timestamp as quickly as
 	// possible.
 	stakerTxID, shouldReward, err := getNextStakerToReward(timestamp, parentState)
 	if err != nil {
-		return nil, fmt.Errorf("could not find next staker to reward: %w", err)
+		return block.Banff{}, fmt.Errorf("could not find next staker to reward: %w", err)
 	}
 	if shouldReward {
 		rewardValidatorTx, err := builder.txBuilder.NewRewardValidatorTx(stakerTxID)
 		if err != nil {
-			return nil, fmt.Errorf("could not build tx to reward staker: %w", err)
+			return block.Banff{}, fmt.Errorf("could not build tx to reward staker: %w", err)
 		}
 
 		return block.NewBanffProposalBlock(

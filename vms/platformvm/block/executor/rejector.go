@@ -51,11 +51,11 @@ func (r *rejector) ApricotStandardBlock(b *block.ApricotStandardBlock) error {
 	return r.rejectBlock(b, "apricot standard")
 }
 
-func (r *rejector) ApricotAtomicBlock(b *block.ApricotAtomicBlock) error {
+func (r *rejector) ApricotAtomicBlock(b *block.ApricotAtomic) error {
 	return r.rejectBlock(b, "apricot atomic")
 }
 
-func (r *rejector) rejectBlock(b block.Block, blockType string) error {
+func (r *rejector) rejectBlock(b block.Interface, blockType string) error {
 	blkID := b.ID()
 	defer r.free(blkID)
 

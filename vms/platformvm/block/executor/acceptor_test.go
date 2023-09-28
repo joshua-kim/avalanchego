@@ -45,7 +45,7 @@ func TestAcceptorVisitProposalBlock(t *testing.T) {
 	)
 	require.NoError(err)
 
-	blkID := blk.ID()
+	blkID := blk.ID
 
 	s := state.NewMockState(ctrl)
 	s.EXPECT().Checksum().Return(ids.Empty).Times(1)
@@ -99,10 +99,10 @@ func TestAcceptorVisitAtomicBlock(t *testing.T) {
 		validators: validators.TestManager,
 	}
 
-	blk, err := block.NewApricotAtomicBlock(
+	blk, err := block.NewApricotAtomic(
 		parentID,
 		1,
-		&txs.Tx{
+		txs.Tx{
 			Unsigned: &txs.AddDelegatorTx{
 				// Without the line below, this function will error.
 				DelegationRewardsOwner: &secp256k1fx.OutputOwners{},

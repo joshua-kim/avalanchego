@@ -29,7 +29,7 @@ type proposalBlockState struct {
 type blockState struct {
 	standardBlockState
 	proposalBlockState
-	statelessBlock block.Block
+	statelessBlock block.Interface
 	onAcceptState  state.Diff
 
 	timestamp      time.Time

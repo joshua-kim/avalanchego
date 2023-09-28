@@ -41,8 +41,8 @@ func TestStatus(t *testing.T) {
 				}
 
 				return &Block{
-					Block:   statelessBlk,
-					manager: manager,
+					Interface: statelessBlk,
+					manager:   manager,
 				}
 			},
 			expectedStatus: choices.Accepted,
@@ -62,8 +62,8 @@ func TestStatus(t *testing.T) {
 					},
 				}
 				return &Block{
-					Block:   statelessBlk,
-					manager: manager,
+					Interface: statelessBlk,
+					manager:   manager,
 				}
 			},
 			expectedStatus: choices.Processing,
@@ -84,8 +84,8 @@ func TestStatus(t *testing.T) {
 					},
 				}
 				return &Block{
-					Block:   statelessBlk,
-					manager: manager,
+					Interface: statelessBlk,
+					manager:   manager,
 				}
 			},
 			expectedStatus: choices.Accepted,
@@ -106,8 +106,8 @@ func TestStatus(t *testing.T) {
 					},
 				}
 				return &Block{
-					Block:   statelessBlk,
-					manager: manager,
+					Interface: statelessBlk,
+					manager:   manager,
 				}
 			},
 			expectedStatus: choices.Processing,
@@ -128,7 +128,7 @@ func TestBlockOptions(t *testing.T) {
 	type test struct {
 		name                   string
 		blkF                   func() *Block
-		expectedPreferenceType block.Block
+		expectedPreferenceType block.Interface
 		expectedErr            error
 	}
 
@@ -152,8 +152,8 @@ func TestBlockOptions(t *testing.T) {
 				}
 
 				return &Block{
-					Block:   innerBlk,
-					manager: manager,
+					Interface: innerBlk,
+					manager:   manager,
 				}
 			},
 			expectedPreferenceType: &block.ApricotCommitBlock{},
@@ -173,8 +173,8 @@ func TestBlockOptions(t *testing.T) {
 				}
 
 				return &Block{
-					Block:   innerBlk,
-					manager: manager,
+					Interface: innerBlk,
+					manager:   manager,
 				}
 			},
 			expectedPreferenceType: &block.ApricotAbortBlock{},
@@ -198,8 +198,8 @@ func TestBlockOptions(t *testing.T) {
 				}
 
 				return &Block{
-					Block:   innerBlk,
-					manager: manager,
+					Interface: innerBlk,
+					manager:   manager,
 				}
 			},
 			expectedPreferenceType: &block.BanffCommitBlock{},
@@ -219,8 +219,8 @@ func TestBlockOptions(t *testing.T) {
 				}
 
 				return &Block{
-					Block:   innerBlk,
-					manager: manager,
+					Interface: innerBlk,
+					manager:   manager,
 				}
 			},
 			expectedPreferenceType: &block.BanffAbortBlock{},
@@ -229,8 +229,8 @@ func TestBlockOptions(t *testing.T) {
 			name: "non oracle block",
 			blkF: func() *Block {
 				return &Block{
-					Block:   &block.BanffStandardBlock{},
-					manager: &manager{},
+					Interface: &block.BanffStandardBlock{},
+					manager:   &manager{},
 				}
 			},
 			expectedErr: snowman.ErrNotOracle,
@@ -247,7 +247,7 @@ func TestBlockOptions(t *testing.T) {
 			if tt.expectedErr != nil {
 				return
 			}
-			require.IsType(tt.expectedPreferenceType, options[0].(*Block).Block)
+			require.IsType(tt.expectedPreferenceType, options[0].(*Block).Interface)
 		})
 	}
 }

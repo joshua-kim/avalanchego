@@ -2240,7 +2240,7 @@ func TestVMInnerBlkCache(t *testing.T) {
 	_, err = vm.ParseBlock(context.Background(), blkNearTip.Bytes())
 	require.NoError(err)
 
-	// Block should now be in cache because it's a post-fork block
+	// Interface should now be in cache because it's a post-fork block
 	// and close to the tip.
 	gotBlk, ok := vm.innerBlkCache.Get(blkNearTip.ID())
 	require.True(ok)

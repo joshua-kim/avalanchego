@@ -66,7 +66,7 @@ func (a *acceptor) ApricotStandardBlock(b *block.ApricotStandardBlock) error {
 	return a.standardBlock(b, "apricot standard")
 }
 
-func (a *acceptor) ApricotAtomicBlock(b *block.ApricotAtomicBlock) error {
+func (a *acceptor) ApricotAtomicBlock(b *block.ApricotAtomic) error {
 	blkID := b.ID()
 	defer a.free(blkID)
 
@@ -116,7 +116,7 @@ func (a *acceptor) ApricotAtomicBlock(b *block.ApricotAtomicBlock) error {
 	return nil
 }
 
-func (a *acceptor) abortBlock(b block.Block, blockType string) error {
+func (a *acceptor) abortBlock(b block.Interface, blockType string) error {
 	parentID := b.Parent()
 	parentState, ok := a.blkIDToState[parentID]
 	if !ok {
@@ -134,7 +134,7 @@ func (a *acceptor) abortBlock(b block.Block, blockType string) error {
 	return a.optionBlock(b, parentState.statelessBlock, blockType)
 }
 
-func (a *acceptor) commitBlock(b block.Block, blockType string) error {
+func (a *acceptor) commitBlock(b block.Interface, blockType string) error {
 	parentID := b.Parent()
 	parentState, ok := a.blkIDToState[parentID]
 	if !ok {
@@ -152,7 +152,7 @@ func (a *acceptor) commitBlock(b block.Block, blockType string) error {
 	return a.optionBlock(b, parentState.statelessBlock, blockType)
 }
 
-func (a *acceptor) optionBlock(b, parent block.Block, blockType string) error {
+func (a *acceptor) optionBlock(b, parent block.Interface, blockType string) error {
 	blkID := b.ID()
 	parentID := parent.ID()
 
@@ -196,7 +196,7 @@ func (a *acceptor) optionBlock(b, parent block.Block, blockType string) error {
 	return nil
 }
 
-func (a *acceptor) proposalBlock(b block.Block, blockType string) {
+func (a *acceptor) proposalBlock(b block.Interface, blockType string) {
 	// Note that:
 	//
 	// * We don't free the proposal block in this method.
@@ -226,7 +226,7 @@ func (a *acceptor) proposalBlock(b block.Block, blockType string) {
 	)
 }
 
-func (a *acceptor) standardBlock(b block.Block, blockType string) error {
+func (a *acceptor) standardBlock(b block.Interface, blockType string) error {
 	blkID := b.ID()
 	defer a.free(blkID)
 
@@ -275,7 +275,7 @@ func (a *acceptor) standardBlock(b block.Block, blockType string) error {
 	return nil
 }
 
-func (a *acceptor) commonAccept(b block.Block) error {
+func (a *acceptor) commonAccept(b block.Interface) error {
 	blkID := b.ID()
 
 	if err := a.metrics.MarkAccepted(b); err != nil {

@@ -13,8 +13,8 @@ import (
 )
 
 var (
-	_ BanffBlock = (*BanffStandardBlock)(nil)
-	_ Block      = (*ApricotStandardBlock)(nil)
+	_ Banff     = (*BanffStandardBlock)(nil)
+	_ Interface = (*ApricotStandardBlock)(nil)
 )
 
 type BanffStandardBlock struct {

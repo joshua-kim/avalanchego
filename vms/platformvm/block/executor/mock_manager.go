@@ -71,10 +71,10 @@ func (mr *MockManagerMockRecorder) GetState(arg0 interface{}) *gomock.Call {
 }
 
 // GetStatelessBlock mocks base method.
-func (m *MockManager) GetStatelessBlock(arg0 ids.ID) (block.Block, error) {
+func (m *MockManager) GetStatelessBlock(arg0 ids.ID) (block.Interface, error) {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "GetStatelessBlock", arg0)
-	ret0, _ := ret[0].(block.Block)
+	ret0, _ := ret[0].(block.Interface)
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
 }
@@ -100,7 +100,7 @@ func (mr *MockManagerMockRecorder) LastAccepted() *gomock.Call {
 }
 
 // NewBlock mocks base method.
-func (m *MockManager) NewBlock(arg0 block.Block) snowman.Block {
+func (m *MockManager) NewBlock(arg0 block.Interface) snowman.Block {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "NewBlock", arg0)
 	ret0, _ := ret[0].(snowman.Block)

@@ -345,7 +345,7 @@ func TestBuildBlock(t *testing.T) {
 		timestamp        time.Time
 		forceAdvanceTime bool
 		parentStateF     func(*gomock.Controller) state.Chain
-		expectedBlkF     func(*require.Assertions) block.Block
+		expectedBlkF     func(*require.Assertions) block.Interface
 		expectedErr      error
 	}
 
@@ -383,7 +383,7 @@ func TestBuildBlock(t *testing.T) {
 				s.EXPECT().GetCurrentStakerIterator().Return(currentStakerIter, nil)
 				return s
 			},
-			expectedBlkF: func(require *require.Assertions) block.Block {
+			expectedBlkF: func(require *require.Assertions) block.Interface {
 				expectedBlk, err := block.NewBanffProposalBlock(
 					parentTimestamp,
 					parentID,
@@ -430,7 +430,7 @@ func TestBuildBlock(t *testing.T) {
 				s.EXPECT().GetCurrentStakerIterator().Return(currentStakerIter, nil).Times(1)
 				return s
 			},
-			expectedBlkF: func(require *require.Assertions) block.Block {
+			expectedBlkF: func(require *require.Assertions) block.Interface {
 				expectedBlk, err := block.NewBanffStandardBlock(
 					parentTimestamp,
 					parentID,
@@ -485,7 +485,7 @@ func TestBuildBlock(t *testing.T) {
 				s.EXPECT().GetCurrentStakerIterator().Return(currentStakerIter, nil).Times(1)
 				return s
 			},
-			expectedBlkF: func(*require.Assertions) block.Block {
+			expectedBlkF: func(*require.Assertions) block.Interface {
 				return nil
 			},
 			expectedErr: ErrNoPendingBlocks,
@@ -533,7 +533,7 @@ func TestBuildBlock(t *testing.T) {
 				s.EXPECT().GetCurrentStakerIterator().Return(currentStakerIter, nil).Times(1)
 				return s
 			},
-			expectedBlkF: func(require *require.Assertions) block.Block {
+			expectedBlkF: func(require *require.Assertions) block.Interface {
 				expectedBlk, err := block.NewBanffStandardBlock(
 					now.Add(-1*time.Second), // note the advanced time
 					parentID,
@@ -586,7 +586,7 @@ func TestBuildBlock(t *testing.T) {
 				s.EXPECT().GetCurrentStakerIterator().Return(currentStakerIter, nil).Times(1)
 				return s
 			},
-			expectedBlkF: func(require *require.Assertions) block.Block {
+			expectedBlkF: func(require *require.Assertions) block.Interface {
 				expectedBlk, err := block.NewBanffStandardBlock(
 					parentTimestamp,
 					parentID,
@@ -640,7 +640,7 @@ func TestBuildBlock(t *testing.T) {
 				s.EXPECT().GetCurrentStakerIterator().Return(currentStakerIter, nil).Times(1)
 				return s
 			},
-			expectedBlkF: func(require *require.Assertions) block.Block {
+			expectedBlkF: func(require *require.Assertions) block.Interface {
 				expectedBlk, err := block.NewBanffStandardBlock(
 					parentTimestamp,
 					parentID,

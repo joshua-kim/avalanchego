@@ -170,7 +170,7 @@ func TestVerifierVisitAtomicBlock(t *testing.T) {
 	// Serialize this block with a dummy tx and replace it after creation with
 	// the mock tx.
 	// TODO allow serialization of mock txs.
-	apricotBlk, err := block.NewApricotAtomicBlock(
+	apricotBlk, err := block.NewApricotAtomic(
 		parentID,
 		2,
 		&txs.Tx{

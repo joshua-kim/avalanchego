@@ -58,7 +58,7 @@ func (b *postForkBlock) Status() choices.Status {
 	return b.status
 }
 
-// Return this block's parent, or a *missing.Block if
+// Return this block's parent, or a *missing.Interface if
 // we don't have the parent.
 func (b *postForkBlock) Parent() ids.ID {
 	return b.ParentID()

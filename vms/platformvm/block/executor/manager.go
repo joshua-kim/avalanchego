@@ -22,8 +22,8 @@ type Manager interface {
 	// Returns the ID of the most recently accepted block.
 	LastAccepted() ids.ID
 	GetBlock(blkID ids.ID) (snowman.Block, error)
-	GetStatelessBlock(blkID ids.ID) (block.Block, error)
-	NewBlock(block.Block) snowman.Block
+	GetStatelessBlock(blkID ids.ID) (block.Interface, error)
+	NewBlock(block.Interface) snowman.Block
 }
 
 func NewManager(
@@ -75,13 +75,13 @@ func (m *manager) GetBlock(blkID ids.ID) (snowman.Block, error) {
 	return m.NewBlock(blk), nil
 }
 
-func (m *manager) GetStatelessBlock(blkID ids.ID) (block.Block, error) {
+func (m *manager) GetStatelessBlock(blkID ids.ID) (block.Interface, error) {
 	return m.backend.GetBlock(blkID)
 }
 
-func (m *manager) NewBlock(blk block.Block) snowman.Block {
+func (m *manager) NewBlock(blk block.Interface) snowman.Block {
 	return &Block{
-		manager: m,
-		Block:   blk,
+		manager:   m,
+		Interface: blk,
 	}
 }

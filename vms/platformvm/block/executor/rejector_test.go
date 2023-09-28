@@ -25,14 +25,14 @@ import (
 func TestRejectBlock(t *testing.T) {
 	type test struct {
 		name         string
-		newBlockFunc func() (block.Block, error)
-		rejectFunc   func(*rejector, block.Block) error
+		newBlockFunc func() (block.Interface, error)
+		rejectFunc   func(*rejector, block.Interface) error
 	}
 
 	tests := []test{
 		{
 			name: "proposal block",
-			newBlockFunc: func() (block.Block, error) {
+			newBlockFunc: func() (block.Interface, error) {
 				return block.NewBanffProposalBlock(
 					time.Now(),
 					ids.GenerateTestID(),
@@ -46,14 +46,14 @@ func TestRejectBlock(t *testing.T) {
 					},
 				)
 			},
-			rejectFunc: func(r *rejector, b block.Block) error {
+			rejectFunc: func(r *rejector, b block.Interface) error {
 				return r.BanffProposalBlock(b.(*block.BanffProposalBlock))
 			},
 		},
 		{
 			name: "atomic block",
-			newBlockFunc: func() (block.Block, error) {
-				return block.NewApricotAtomicBlock(
+			newBlockFunc: func() (block.Interface, error) {
+				return block.NewApricotAtomic(
 					ids.GenerateTestID(),
 					1,
 					&txs.Tx{
@@ -65,13 +65,13 @@ func TestRejectBlock(t *testing.T) {
 					},
 				)
 			},
-			rejectFunc: func(r *rejector, b block.Block) error {
-				return r.ApricotAtomicBlock(b.(*block.ApricotAtomicBlock))
+			rejectFunc: func(r *rejector, b block.Interface) error {
+				return r.ApricotAtomicBlock(b.(*block.ApricotAtomic))
 			},
 		},
 		{
 			name: "standard block",
-			newBlockFunc: func() (block.Block, error) {
+			newBlockFunc: func() (block.Interface, error) {
 				return block.NewBanffStandardBlock(
 					time.Now(),
 					ids.GenerateTestID(),
@@ -87,25 +87,25 @@ func TestRejectBlock(t *testing.T) {
 					},
 				)
 			},
-			rejectFunc: func(r *rejector, b block.Block) error {
+			rejectFunc: func(r *rejector, b block.Interface) error {
 				return r.BanffStandardBlock(b.(*block.BanffStandardBlock))
 			},
 		},
 		{
 			name: "commit",
-			newBlockFunc: func() (block.Block, error) {
+			newBlockFunc: func() (block.Interface, error) {
 				return block.NewBanffCommitBlock(time.Now(), ids.GenerateTestID() /*parent*/, 1 /*height*/)
 			},
-			rejectFunc: func(r *rejector, blk block.Block) error {
+			rejectFunc: func(r *rejector, blk block.Interface) error {
 				return r.BanffCommitBlock(blk.(*block.BanffCommitBlock))
 			},
 		},
 		{
 			name: "abort",
-			newBlockFunc: func() (block.Block, error) {
+			newBlockFunc: func() (block.Interface, error) {
 				return block.NewBanffAbortBlock(time.Now(), ids.GenerateTestID() /*parent*/, 1 /*height*/)
 			},
-			rejectFunc: func(r *rejector, blk block.Block) error {
+			rejectFunc: func(r *rejector, blk block.Interface) error {
 				return r.BanffAbortBlock(blk.(*block.BanffAbortBlock))
 			},
 		},

@@ -556,7 +556,7 @@ func requireEqualPublicKeysValidatorSet(
 func TestParsedStateBlock(t *testing.T) {
 	require := require.New(t)
 
-	var blks []block.Block
+	var blks []block.Interface
 
 	{
 		blk, err := block.NewApricotAbortBlock(ids.GenerateTestID(), 1000)
@@ -565,7 +565,7 @@ func TestParsedStateBlock(t *testing.T) {
 	}
 
 	{
-		blk, err := block.NewApricotAtomicBlock(ids.GenerateTestID(), 1000, &txs.Tx{
+		blk, err := block.NewApricotAtomic(ids.GenerateTestID(), 1000, &txs.Tx{
 			Unsigned: &txs.AdvanceTimeTx{
 				Time: 1000,
 			},

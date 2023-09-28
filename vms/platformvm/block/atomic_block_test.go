@@ -33,7 +33,7 @@ func TestNewApricotAtomicBlock(t *testing.T) {
 	}
 	require.NoError(tx.Initialize(txs.Codec))
 
-	blk, err := NewApricotAtomicBlock(
+	blk, err := NewApricotAtomic(
 		parentID,
 		height,
 		tx,

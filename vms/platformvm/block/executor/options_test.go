@@ -14,14 +14,14 @@ import (
 )
 
 func TestOptionsUnexpectedBlockType(t *testing.T) {
-	tests := []block.Block{
+	tests := []block.Interface{
 		&block.BanffAbortBlock{},
 		&block.BanffCommitBlock{},
 		&block.BanffStandardBlock{},
 		&block.ApricotAbortBlock{},
 		&block.ApricotCommitBlock{},
 		&block.ApricotStandardBlock{},
-		&block.ApricotAtomicBlock{},
+		&block.ApricotAtomic{},
 	}
 
 	for _, blk := range tests {

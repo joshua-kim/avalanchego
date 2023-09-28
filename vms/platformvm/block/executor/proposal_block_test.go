@@ -182,7 +182,7 @@ func TestBanffProposalBlockTimeVerification(t *testing.T) {
 	env.blkManager.(*manager).lastAccepted = parentID
 	env.mockedState.EXPECT().GetLastAccepted().Return(parentID).AnyTimes()
 	env.mockedState.EXPECT().GetStatelessBlock(gomock.Any()).DoAndReturn(
-		func(blockID ids.ID) (block.Block, error) {
+		func(blockID ids.ID) (block.Interface, error) {
 			if blockID == parentID {
 				return banffParentBlk, nil
 			}

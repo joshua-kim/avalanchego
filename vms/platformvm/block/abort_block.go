@@ -12,8 +12,8 @@ import (
 )
 
 var (
-	_ BanffBlock = (*BanffAbortBlock)(nil)
-	_ Block      = (*ApricotAbortBlock)(nil)
+	_ Banff     = (*BanffAbortBlock)(nil)
+	_ Interface = (*ApricotAbortBlock)(nil)
 )
 
 type BanffAbortBlock struct {
@@ -37,7 +37,7 @@ func NewBanffAbortBlock(
 	blk := &BanffAbortBlock{
 		Time: uint64(timestamp.Unix()),
 		ApricotAbortBlock: ApricotAbortBlock{
-			CommonBlock: CommonBlock{
+			Block: CommonBlock{
 				PrntID: parentID,
 				Hght:   height,
 			},
@@ -47,11 +47,11 @@ func NewBanffAbortBlock(
 }
 
 type ApricotAbortBlock struct {
-	CommonBlock `serialize:"true"`
+	Block `serialize:"true"`
 }
 
 func (b *ApricotAbortBlock) initialize(bytes []byte) error {
-	b.CommonBlock.initialize(bytes)
+	b.Block.initialize(bytes)
 	return nil
 }
 
@@ -73,7 +73,7 @@ func NewApricotAbortBlock(
 	height uint64,
 ) (*ApricotAbortBlock, error) {
 	blk := &ApricotAbortBlock{
-		CommonBlock: CommonBlock{
+		Block: CommonBlock{
 			PrntID: parentID,
 			Hght:   height,
 		},

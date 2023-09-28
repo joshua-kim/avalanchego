@@ -21,7 +21,7 @@ func (noopMetrics) MarkOptionVoteWon() {}
 
 func (noopMetrics) MarkOptionVoteLost() {}
 
-func (noopMetrics) MarkAccepted(block.Block) error {
+func (noopMetrics) MarkAccepted(block.Interface) error {
 	return nil
 }
 

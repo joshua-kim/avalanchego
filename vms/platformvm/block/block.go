@@ -12,17 +12,24 @@ import (
 	"github.com/ava-labs/avalanchego/vms/platformvm/txs"
 )
 
-// Block defines the common stateless interface for all blocks
-type Block interface {
+// Data common across all blocks
+type Data struct {
+	ID     ids.ID   `serialize:"true"`
+	Parent ids.ID   `serialize:"true"`
+	Bytes  []byte   `serialize:"true"`
+	Height uint64   `serialize:"true"`
+	Txs    []txs.Tx `serialize:"true"`
+}
+
+// Block in the P-Chain
+type Block struct {
+	Interface
+	Data `serialize:"true"`
+}
+
+// Interface implements block-specific behavior
+type Interface interface {
 	snow.ContextInitializable
-	ID() ids.ID
-	Parent() ids.ID
-	Bytes() []byte
-	Height() uint64
-
-	// Txs returns list of transactions contained in the block
-	Txs() []*txs.Tx
-
 	// Visit calls [visitor] with this block's concrete type
 	Visit(visitor Visitor) error
 
@@ -31,14 +38,14 @@ type Block interface {
 	initialize(bytes []byte) error
 }
 
-type BanffBlock interface {
+type Banff struct {
 	Block
-	Timestamp() time.Time
+	Timestamp time.Time
 }
 
-func initialize(blk Block) error {
+func initialize(blk Interface) error {
 	// We serialize this block as a pointer so that it can be deserialized into
-	// a Block
+	// a Interface
 	bytes, err := Codec.Marshal(Version, &blk)
 	if err != nil {
 		return fmt.Errorf("couldn't marshal block: %w", err)

@@ -13,5 +13,5 @@ type Visitor interface {
 	ApricotCommitBlock(*ApricotCommitBlock) error
 	ApricotProposalBlock(*ApricotProposalBlock) error
 	ApricotStandardBlock(*ApricotStandardBlock) error
-	ApricotAtomicBlock(*ApricotAtomicBlock) error
+	ApricotAtomicBlock(*ApricotAtomic) error
 }

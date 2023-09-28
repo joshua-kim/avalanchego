@@ -23,7 +23,7 @@ var (
 
 // Exported for testing in platformvm package.
 type Block struct {
-	block.Block
+	block.Interface
 	manager *manager
 }
 
@@ -84,7 +84,7 @@ func (b *Block) Timestamp() time.Time {
 
 func (b *Block) Options(context.Context) ([2]snowman.Block, error) {
 	options := options{}
-	if err := b.Block.Visit(&options); err != nil {
+	if err := b.Interface.Visit(&options); err != nil {
 		return [2]snowman.Block{}, err
 	}
 

@@ -169,7 +169,7 @@ func (v *verifier) ApricotStandardBlock(b *block.ApricotStandardBlock) error {
 	return v.standardBlock(b, onAcceptState)
 }
 
-func (v *verifier) ApricotAtomicBlock(b *block.ApricotAtomicBlock) error {
+func (v *verifier) ApricotAtomicBlock(b *block.ApricotAtomic) error {
 	// We call [commonBlock] here rather than [apricotCommonBlock] because below
 	// this check we perform the more strict check that ApricotPhase5 isn't
 	// activated.
@@ -222,7 +222,7 @@ func (v *verifier) ApricotAtomicBlock(b *block.ApricotAtomicBlock) error {
 	return nil
 }
 
-func (v *verifier) banffOptionBlock(b block.BanffBlock) error {
+func (v *verifier) banffOptionBlock(b block.Banff) error {
 	if err := v.commonBlock(b); err != nil {
 		return err
 	}
@@ -245,7 +245,7 @@ func (v *verifier) banffOptionBlock(b block.BanffBlock) error {
 	return nil
 }
 
-func (v *verifier) banffNonOptionBlock(b block.BanffBlock) error {
+func (v *verifier) banffNonOptionBlock(b block.Banff) error {
 	if err := v.commonBlock(b); err != nil {
 		return err
 	}
@@ -280,7 +280,7 @@ func (v *verifier) banffNonOptionBlock(b block.BanffBlock) error {
 	)
 }
 
-func (v *verifier) apricotCommonBlock(b block.Block) error {
+func (v *verifier) apricotCommonBlock(b block.Interface) error {
 	// We can use the parent timestamp here, because we are guaranteed that the
 	// parent was verified. Apricot blocks only update the timestamp with
 	// AdvanceTimeTxs. This means that this block's timestamp will be equal to
@@ -297,7 +297,7 @@ func (v *verifier) apricotCommonBlock(b block.Block) error {
 	return v.commonBlock(b)
 }
 
-func (v *verifier) commonBlock(b block.Block) error {
+func (v *verifier) commonBlock(b block.Interface) error {
 	parentID := b.Parent()
 	parent, err := v.GetBlock(parentID)
 	if err != nil {
@@ -318,7 +318,7 @@ func (v *verifier) commonBlock(b block.Block) error {
 }
 
 // abortBlock populates the state of this block if [nil] is returned
-func (v *verifier) abortBlock(b block.Block) error {
+func (v *verifier) abortBlock(b block.Interface) error {
 	parentID := b.Parent()
 	onAcceptState, ok := v.getOnAbortState(parentID)
 	if !ok {
@@ -335,7 +335,7 @@ func (v *verifier) abortBlock(b block.Block) error {
 }
 
 // commitBlock populates the state of this block if [nil] is returned
-func (v *verifier) commitBlock(b block.Block) error {
+func (v *verifier) commitBlock(b block.Interface) error {
 	parentID := b.Parent()
 	onAcceptState, ok := v.getOnCommitState(parentID)
 	if !ok {
@@ -464,7 +464,7 @@ func (v *verifier) standardBlock(
 
 // verifyUniqueInputs verifies that the inputs of the given block are not
 // duplicated in any of the parent blocks pinned in memory.
-func (v *verifier) verifyUniqueInputs(block block.Block, inputs set.Set[ids.ID]) error {
+func (v *verifier) verifyUniqueInputs(block block.Interface, inputs set.Set[ids.ID]) error {
 	if inputs.Len() == 0 {
 		return nil
 	}

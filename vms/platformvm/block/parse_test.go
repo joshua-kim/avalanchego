@@ -229,7 +229,7 @@ func TestAtomicBlock(t *testing.T) {
 
 	for _, cdc := range []codec.Manager{Codec, GenesisCodec} {
 		// build block
-		atomicBlk, err := NewApricotAtomicBlock(
+		atomicBlk, err := NewApricotAtomic(
 			parentID,
 			height,
 			tx,
@@ -246,8 +246,8 @@ func TestAtomicBlock(t *testing.T) {
 		require.Equal(atomicBlk.Parent(), parsed.Parent())
 		require.Equal(atomicBlk.Height(), parsed.Height())
 
-		require.IsType(&ApricotAtomicBlock{}, parsed)
-		parsedAtomicBlk := parsed.(*ApricotAtomicBlock)
+		require.IsType(&ApricotAtomic{}, parsed)
+		parsedAtomicBlk := parsed.(*ApricotAtomic)
 		require.Equal([]*txs.Tx{tx}, parsedAtomicBlk.Txs())
 	}
 }

@@ -184,7 +184,7 @@ func (b *builder) BuildBlock(context.Context) (snowman.Block, error) {
 
 // Returns the block we want to build and issue.
 // Only modifies state to remove expired proposal txs.
-func (b *builder) buildBlock() (block.Block, error) {
+func (b *builder) buildBlock() (block.Interface, error) {
 	// Get the block to build on top of and retrieve the new block's context.
 	preferred, err := b.Preferred()
 	if err != nil {
@@ -345,7 +345,7 @@ func buildBlock(
 	timestamp time.Time,
 	forceAdvanceTime bool,
 	parentState state.Chain,
-) (block.Block, error) {
+) (block.Interface, error) {
 	// Try rewarding stakers whose staking period ends at the new chain time.
 	// This is done first to prioritize advancing the timestamp as quickly as
 	// possible.

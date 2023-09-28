@@ -35,7 +35,7 @@ type BlockState interface {
 }
 
 type blockState struct {
-	// Caches BlockID -> Block. If the Block is nil, that means the block is not
+	// Caches BlockID -> Interface. If the Interface is nil, that means the block is not
 	// in storage.
 	blkCache cache.Cacher[ids.ID, *blockWrapper]
 

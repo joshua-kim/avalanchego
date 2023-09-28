@@ -5,8 +5,8 @@ package block
 
 import "github.com/ava-labs/avalanchego/codec"
 
-func Parse(c codec.Manager, b []byte) (Block, error) {
-	var blk Block
+func Parse(c codec.Manager, b []byte) (Interface, error) {
+	var blk Interface
 	if _, err := c.Unmarshal(b, &blk); err != nil {
 		return nil, err
 	}

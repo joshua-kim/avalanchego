@@ -58,7 +58,7 @@ func batchedParseBlockCachingTestPlugin(t *testing.T, loadExpectations bool) blo
 			vm.EXPECT().LastAccepted(gomock.Any()).Return(preSummaryBlk.ID(), nil).Times(1),
 			vm.EXPECT().GetBlock(gomock.Any(), gomock.Any()).Return(preSummaryBlk, nil).Times(1),
 
-			// Parse Block 1
+			// Parse Interface 1
 			vm.EXPECT().ParseBlock(gomock.Any(), blkBytes1).Return(blk1, nil).Times(1),
 			blk1.EXPECT().ID().Return(blkID1).Times(1),
 			blk1.EXPECT().Parent().Return(blkID0).Times(1),
@@ -66,7 +66,7 @@ func batchedParseBlockCachingTestPlugin(t *testing.T, loadExpectations bool) blo
 			blk1.EXPECT().Height().Return(uint64(1)).Times(1),
 			blk1.EXPECT().Timestamp().Return(time1).Times(1),
 
-			// Parse Block 2
+			// Parse Interface 2
 			vm.EXPECT().ParseBlock(gomock.Any(), blkBytes2).Return(blk2, nil).Times(1),
 			blk2.EXPECT().ID().Return(blkID2).Times(1),
 			blk2.EXPECT().Parent().Return(blkID1).Times(1),

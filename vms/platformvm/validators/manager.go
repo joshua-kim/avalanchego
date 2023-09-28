@@ -53,7 +53,7 @@ type State interface {
 	GetTx(txID ids.ID) (*txs.Tx, status.Status, error)
 
 	GetLastAccepted() ids.ID
-	GetStatelessBlock(blockID ids.ID) (block.Block, error)
+	GetStatelessBlock(blockID ids.ID) (block.Interface, error)
 
 	// ValidatorSet adds all the validators and delegators of [subnetID] into
 	// [vdrs].

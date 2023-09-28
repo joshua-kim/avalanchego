@@ -77,7 +77,7 @@ func (vm *VM) GetBlockIDAtHeight(ctx context.Context, height uint64) (ids.ID, er
 		return vm.State.GetBlockIDAtHeight(height)
 
 	case database.ErrNotFound:
-		// fork not reached yet. Block must be pre-fork
+		// fork not reached yet. Interface must be pre-fork
 		return vm.ChainVM.GetBlockIDAtHeight(ctx, height)
 
 	default:
@@ -154,7 +154,7 @@ func (vm *VM) storeHeightEntry(height uint64, blkID ids.ID) error {
 	heightToDelete := height - vm.numHistoricalBlocks - 1
 	blockToDelete, err := vm.State.GetBlockIDAtHeight(heightToDelete)
 	if err == database.ErrNotFound {
-		// Block may have already been deleted. This can happen due to a
+		// Interface may have already been deleted. This can happen due to a
 		// proposervm rollback, the node having recently state-synced, or the
 		// user reconfiguring the node to store more historical blocks than a
 		// prior run.

@@ -15,8 +15,8 @@ var _ block.Visitor = (*verifier)(nil)
 // options supports build new option blocks
 type options struct {
 	// outputs populated by this struct's methods:
-	commitBlock block.Block
-	abortBlock  block.Block
+	commitBlock block.Interface
+	abortBlock  block.Interface
 }
 
 func (*options) BanffAbortBlock(*block.BanffAbortBlock) error {
@@ -90,6 +90,6 @@ func (*options) ApricotStandardBlock(*block.ApricotStandardBlock) error {
 	return snowman.ErrNotOracle
 }
 
-func (*options) ApricotAtomicBlock(*block.ApricotAtomicBlock) error {
+func (*options) ApricotAtomicBlock(*block.ApricotAtomic) error {
 	return snowman.ErrNotOracle
 }

@@ -732,15 +732,15 @@ func TestRewardValidatorAccept(t *testing.T) {
 	require.NoError(err)
 
 	commit := options[0].(*blockexecutor.Block)
-	require.IsType(&block.BanffCommitBlock{}, commit.Block)
+	require.IsType(&block.BanffCommitBlock{}, commit.Interface)
 	abort := options[1].(*blockexecutor.Block)
-	require.IsType(&block.BanffAbortBlock{}, abort.Block)
+	require.IsType(&block.BanffAbortBlock{}, abort.Interface)
 
 	require.NoError(oracleBlk.Accept(context.Background()))
 	require.NoError(commit.Verify(context.Background()))
 	require.NoError(abort.Verify(context.Background()))
 
-	txID := oracleBlk.(block.Block).Txs()[0].ID()
+	txID := oracleBlk.(block.Interface).Txs()[0].ID()
 	{
 		onAccept, ok := vm.manager.GetState(abort.ID())
 		require.True(ok)
@@ -774,16 +774,16 @@ func TestRewardValidatorAccept(t *testing.T) {
 	require.NoError(err)
 
 	commit = options[0].(*blockexecutor.Block)
-	require.IsType(&block.BanffCommitBlock{}, commit.Block)
+	require.IsType(&block.BanffCommitBlock{}, commit.Interface)
 
 	abort = options[1].(*blockexecutor.Block)
-	require.IsType(&block.BanffAbortBlock{}, abort.Block)
+	require.IsType(&block.BanffAbortBlock{}, abort.Interface)
 
 	require.NoError(oracleBlk.Accept(context.Background()))
 	require.NoError(commit.Verify(context.Background()))
 	require.NoError(abort.Verify(context.Background()))
 
-	txID = blk.(block.Block).Txs()[0].ID()
+	txID = blk.(block.Interface).Txs()[0].ID()
 	{
 		onAccept, ok := vm.manager.GetState(abort.ID())
 		require.True(ok)
@@ -826,16 +826,16 @@ func TestRewardValidatorReject(t *testing.T) {
 	require.NoError(err)
 
 	commit := options[0].(*blockexecutor.Block)
-	require.IsType(&block.BanffCommitBlock{}, commit.Block)
+	require.IsType(&block.BanffCommitBlock{}, commit.Interface)
 
 	abort := options[1].(*blockexecutor.Block)
-	require.IsType(&block.BanffAbortBlock{}, abort.Block)
+	require.IsType(&block.BanffAbortBlock{}, abort.Interface)
 
 	require.NoError(oracleBlk.Accept(context.Background()))
 	require.NoError(commit.Verify(context.Background()))
 	require.NoError(abort.Verify(context.Background()))
 
-	txID := blk.(block.Block).Txs()[0].ID()
+	txID := blk.(block.Interface).Txs()[0].ID()
 	{
 		onAccept, ok := vm.manager.GetState(abort.ID())
 		require.True(ok)
@@ -865,15 +865,15 @@ func TestRewardValidatorReject(t *testing.T) {
 	require.NoError(err)
 
 	commit = options[0].(*blockexecutor.Block)
-	require.IsType(&block.BanffCommitBlock{}, commit.Block)
+	require.IsType(&block.BanffCommitBlock{}, commit.Interface)
 
 	abort = options[1].(*blockexecutor.Block)
-	require.IsType(&block.BanffAbortBlock{}, abort.Block)
+	require.IsType(&block.BanffAbortBlock{}, abort.Interface)
 
 	require.NoError(blk.Accept(context.Background()))
 	require.NoError(commit.Verify(context.Background()))
 
-	txID = blk.(block.Block).Txs()[0].ID()
+	txID = blk.(block.Interface).Txs()[0].ID()
 	{
 		onAccept, ok := vm.manager.GetState(commit.ID())
 		require.True(ok)
@@ -917,16 +917,16 @@ func TestRewardValidatorPreferred(t *testing.T) {
 	require.NoError(err)
 
 	commit := options[0].(*blockexecutor.Block)
-	require.IsType(&block.BanffCommitBlock{}, commit.Block)
+	require.IsType(&block.BanffCommitBlock{}, commit.Interface)
 
 	abort := options[1].(*blockexecutor.Block)
-	require.IsType(&block.BanffAbortBlock{}, abort.Block)
+	require.IsType(&block.BanffAbortBlock{}, abort.Interface)
 
 	require.NoError(oracleBlk.Accept(context.Background()))
 	require.NoError(commit.Verify(context.Background()))
 	require.NoError(abort.Verify(context.Background()))
 
-	txID := blk.(block.Block).Txs()[0].ID()
+	txID := blk.(block.Interface).Txs()[0].ID()
 	{
 		onAccept, ok := vm.manager.GetState(abort.ID())
 		require.True(ok)
@@ -957,15 +957,15 @@ func TestRewardValidatorPreferred(t *testing.T) {
 	require.NoError(err)
 
 	commit = options[0].(*blockexecutor.Block)
-	require.IsType(&block.BanffCommitBlock{}, commit.Block)
+	require.IsType(&block.BanffCommitBlock{}, commit.Interface)
 
 	abort = options[1].(*blockexecutor.Block)
-	require.IsType(&block.BanffAbortBlock{}, abort.Block)
+	require.IsType(&block.BanffAbortBlock{}, abort.Interface)
 
 	require.NoError(blk.Accept(context.Background()))
 	require.NoError(commit.Verify(context.Background()))
 
-	txID = blk.(block.Block).Txs()[0].ID()
+	txID = blk.(block.Interface).Txs()[0].ID()
 	{
 		onAccept, ok := vm.manager.GetState(commit.ID())
 		require.True(ok)
@@ -1123,7 +1123,7 @@ func TestCreateSubnet(t *testing.T) {
 	require.NoError(blk.Accept(context.Background())) // add the validator to pending validator set
 	require.NoError(vm.SetPreference(context.Background(), vm.manager.LastAccepted()))
 
-	txID := blk.(block.Block).Txs()[0].ID()
+	txID := blk.(block.Interface).Txs()[0].ID()
 	_, txStatus, err = vm.state.GetTx(txID)
 	require.NoError(err)
 	require.Equal(status.Committed, txStatus)
@@ -1283,7 +1283,7 @@ func TestOptimisticAtomicImport(t *testing.T) {
 	preferredID := preferred.ID()
 	preferredHeight := preferred.Height()
 
-	statelessBlk, err := block.NewApricotAtomicBlock(
+	statelessBlk, err := block.NewApricotAtomic(
 		preferredID,
 		preferredHeight+1,
 		tx,
@@ -2032,17 +2032,17 @@ func TestUptimeDisallowedWithRestart(t *testing.T) {
 	require.NoError(err)
 
 	commit := options[0].(*blockexecutor.Block)
-	require.IsType(&block.BanffCommitBlock{}, commit.Block)
+	require.IsType(&block.BanffCommitBlock{}, commit.Interface)
 
 	abort := options[1].(*blockexecutor.Block)
-	require.IsType(&block.BanffAbortBlock{}, abort.Block)
+	require.IsType(&block.BanffAbortBlock{}, abort.Interface)
 
 	require.NoError(oracleBlk.Accept(context.Background()))
 	require.NoError(commit.Verify(context.Background()))
 	require.NoError(abort.Verify(context.Background()))
 	require.NoError(secondVM.SetPreference(context.Background(), secondVM.manager.LastAccepted()))
 
-	proposalTx := blk.(block.Block).Txs()[0]
+	proposalTx := blk.(block.Interface).Txs()[0]
 	{
 		onAccept, ok := secondVM.manager.GetState(abort.ID())
 		require.True(ok)
@@ -2073,16 +2073,16 @@ func TestUptimeDisallowedWithRestart(t *testing.T) {
 	require.NoError(err)
 
 	commit = options[0].(*blockexecutor.Block)
-	require.IsType(&block.BanffCommitBlock{}, commit.Block)
+	require.IsType(&block.BanffCommitBlock{}, commit.Interface)
 
 	abort = options[1].(*blockexecutor.Block)
-	require.IsType(&block.BanffAbortBlock{}, abort.Block)
+	require.IsType(&block.BanffAbortBlock{}, abort.Interface)
 
 	require.NoError(blk.Accept(context.Background()))
 	require.NoError(commit.Verify(context.Background()))
 	require.NoError(secondVM.SetPreference(context.Background(), secondVM.manager.LastAccepted()))
 
-	proposalTx = blk.(block.Block).Txs()[0]
+	proposalTx = blk.(block.Interface).Txs()[0]
 	{
 		onAccept, ok := secondVM.manager.GetState(commit.ID())
 		require.True(ok)
@@ -2168,10 +2168,10 @@ func TestUptimeDisallowedAfterNeverConnecting(t *testing.T) {
 	require.NoError(err)
 
 	commit := options[0].(*blockexecutor.Block)
-	require.IsType(&block.BanffCommitBlock{}, commit.Block)
+	require.IsType(&block.BanffCommitBlock{}, commit.Interface)
 
 	abort := options[1].(*blockexecutor.Block)
-	require.IsType(&block.BanffAbortBlock{}, abort.Block)
+	require.IsType(&block.BanffAbortBlock{}, abort.Interface)
 
 	require.NoError(oracleBlk.Accept(context.Background()))
 	require.NoError(commit.Verify(context.Background()))
@@ -2194,10 +2194,10 @@ func TestUptimeDisallowedAfterNeverConnecting(t *testing.T) {
 	require.NoError(err)
 
 	commit = options[0].(*blockexecutor.Block)
-	require.IsType(&block.BanffCommitBlock{}, commit.Block)
+	require.IsType(&block.BanffCommitBlock{}, commit.Interface)
 
 	abort = options[1].(*blockexecutor.Block)
-	require.IsType(&block.BanffAbortBlock{}, abort.Block)
+	require.IsType(&block.BanffAbortBlock{}, abort.Interface)
 
 	require.NoError(blk.Accept(context.Background()))
 	require.NoError(commit.Verify(context.Background()))

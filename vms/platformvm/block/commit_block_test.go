@@ -18,7 +18,7 @@ func TestNewBanffCommitBlock(t *testing.T) {
 	timestamp := time.Now().Truncate(time.Second)
 	parentID := ids.GenerateTestID()
 	height := uint64(1337)
-	blk, err := NewBanffCommitBlock(
+	blk, err := NewBanffCommit(
 		timestamp,
 		parentID,
 		height,

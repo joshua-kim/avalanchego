@@ -559,7 +559,7 @@ func TestParsedStateBlock(t *testing.T) {
 	var blks []block.Interface
 
 	{
-		blk, err := block.NewApricotAbortBlock(ids.GenerateTestID(), 1000)
+		blk, err := block.NewApricotAbort(ids.GenerateTestID(), 1000)
 		require.NoError(err)
 		blks = append(blks, blk)
 	}
@@ -581,7 +581,7 @@ func TestParsedStateBlock(t *testing.T) {
 	}
 
 	{
-		blk, err := block.NewApricotProposalBlock(ids.GenerateTestID(), 1000, &txs.Tx{
+		blk, err := block.NewApricotProposal(ids.GenerateTestID(), 1000, &txs.Tx{
 			Unsigned: &txs.RewardValidatorTx{
 				TxID: ids.GenerateTestID(),
 			},
@@ -591,7 +591,7 @@ func TestParsedStateBlock(t *testing.T) {
 	}
 
 	{
-		blk, err := block.NewApricotStandardBlock(ids.GenerateTestID(), 1000, []*txs.Tx{
+		blk, err := block.NewApricotStandard(ids.GenerateTestID(), 1000, []*txs.Tx{
 			{
 				Unsigned: &txs.RewardValidatorTx{
 					TxID: ids.GenerateTestID(),
@@ -603,13 +603,13 @@ func TestParsedStateBlock(t *testing.T) {
 	}
 
 	{
-		blk, err := block.NewBanffAbortBlock(time.Now(), ids.GenerateTestID(), 1000)
+		blk, err := block.NewBanffAbort(time.Now(), ids.GenerateTestID(), 1000)
 		require.NoError(err)
 		blks = append(blks, blk)
 	}
 
 	{
-		blk, err := block.NewBanffCommitBlock(time.Now(), ids.GenerateTestID(), 1000)
+		blk, err := block.NewBanffCommit(time.Now(), ids.GenerateTestID(), 1000)
 		require.NoError(err)
 		blks = append(blks, blk)
 	}
@@ -625,7 +625,7 @@ func TestParsedStateBlock(t *testing.T) {
 	}
 
 	{
-		blk, err := block.NewBanffStandardBlock(time.Now(), ids.GenerateTestID(), 1000, []*txs.Tx{
+		blk, err := block.NewBanff(time.Now(), ids.GenerateTestID(), 1000, []*txs.Tx{
 			{
 				Unsigned: &txs.RewardValidatorTx{
 					TxID: ids.GenerateTestID(),

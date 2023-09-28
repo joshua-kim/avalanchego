@@ -345,7 +345,7 @@ func TestGetTx(t *testing.T) {
 						require.NoError(err)
 
 						commit := options[0].(*blockexecutor.Block)
-						require.IsType(&block.BanffCommitBlock{}, commit.Interface)
+						require.IsType(&block.BanffCommit{}, commit.Interface)
 						require.NoError(commit.Verify(context.Background()))
 						require.NoError(commit.Accept(context.Background()))
 					}
@@ -749,7 +749,7 @@ func TestGetBlock(t *testing.T) {
 			preferred, err := service.vm.Builder.Preferred()
 			require.NoError(err)
 
-			statelessBlock, err := block.NewBanffStandardBlock(
+			statelessBlock, err := block.NewBanff(
 				preferred.Timestamp(),
 				preferred.ID(),
 				preferred.Height()+1,
@@ -771,8 +771,8 @@ func TestGetBlock(t *testing.T) {
 
 			switch {
 			case test.encoding == formatting.JSON:
-				require.IsType((*block.BanffStandardBlock)(nil), response.Block)
-				responseBlock := response.Block.(*block.BanffStandardBlock)
+				require.IsType((*block.BanffStandard)(nil), response.Block)
+				responseBlock := response.Block.(*block.BanffStandard)
 				require.Equal(statelessBlock.ID(), responseBlock.ID())
 
 				_, err = stdjson.Marshal(response)

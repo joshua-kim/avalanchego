@@ -15,10 +15,10 @@ import (
 
 func TestOptionsUnexpectedBlockType(t *testing.T) {
 	tests := []block.Interface{
-		&block.BanffAbortBlock{},
-		&block.BanffCommitBlock{},
-		&block.BanffStandardBlock{},
-		&block.ApricotAbortBlock{},
+		&block.BanffAbort{},
+		&block.BanffCommit{},
+		&block.BanffStandard{},
+		&block.ApricotAbort{},
 		&block.ApricotCommitBlock{},
 		&block.ApricotStandardBlock{},
 		&block.ApricotAtomic{},

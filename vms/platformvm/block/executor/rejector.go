@@ -19,23 +19,23 @@ type rejector struct {
 	addTxsToMempool bool
 }
 
-func (r *rejector) BanffAbortBlock(b *block.BanffAbortBlock) error {
+func (r *rejector) BanffAbort(b *block.BanffAbort) error {
 	return r.rejectBlock(b, "banff abort")
 }
 
-func (r *rejector) BanffCommitBlock(b *block.BanffCommitBlock) error {
+func (r *rejector) BanffCommitBlock(b *block.BanffCommit) error {
 	return r.rejectBlock(b, "banff commit")
 }
 
-func (r *rejector) BanffProposalBlock(b *block.BanffProposalBlock) error {
+func (r *rejector) BanffProposalBlock(b *block.BanffProposal) error {
 	return r.rejectBlock(b, "banff proposal")
 }
 
-func (r *rejector) BanffStandardBlock(b *block.BanffStandardBlock) error {
+func (r *rejector) BanffStandardBlock(b *block.BanffStandard) error {
 	return r.rejectBlock(b, "banff standard")
 }
 
-func (r *rejector) ApricotAbortBlock(b *block.ApricotAbortBlock) error {
+func (r *rejector) ApricotAbortBlock(b *block.ApricotAbort) error {
 	return r.rejectBlock(b, "apricot abort")
 }
 
@@ -43,7 +43,7 @@ func (r *rejector) ApricotCommitBlock(b *block.ApricotCommitBlock) error {
 	return r.rejectBlock(b, "apricot commit")
 }
 
-func (r *rejector) ApricotProposalBlock(b *block.ApricotProposalBlock) error {
+func (r *rejector) ApricotProposalBlock(b *block.ApricotProposal) error {
 	return r.rejectBlock(b, "apricot proposal")
 }
 

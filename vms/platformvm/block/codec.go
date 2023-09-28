@@ -54,8 +54,8 @@ func init() {
 func RegisterApricotBlockTypes(targetCodec codec.Registry) error {
 	errs := wrappers.Errs{}
 	errs.Add(
-		targetCodec.RegisterType(&ApricotProposalBlock{}),
-		targetCodec.RegisterType(&ApricotAbortBlock{}),
+		targetCodec.RegisterType(&ApricotProposal{}),
+		targetCodec.RegisterType(&ApricotAbort{}),
 		targetCodec.RegisterType(&ApricotCommitBlock{}),
 		targetCodec.RegisterType(&ApricotStandardBlock{}),
 		targetCodec.RegisterType(&ApricotAtomic{}),
@@ -66,10 +66,10 @@ func RegisterApricotBlockTypes(targetCodec codec.Registry) error {
 func RegisterBanffBlockTypes(targetCodec codec.Registry) error {
 	errs := wrappers.Errs{}
 	errs.Add(
-		targetCodec.RegisterType(&BanffProposalBlock{}),
-		targetCodec.RegisterType(&BanffAbortBlock{}),
-		targetCodec.RegisterType(&BanffCommitBlock{}),
-		targetCodec.RegisterType(&BanffStandardBlock{}),
+		targetCodec.RegisterType(&BanffProposal{}),
+		targetCodec.RegisterType(&BanffAbort{}),
+		targetCodec.RegisterType(&BanffCommit{}),
+		targetCodec.RegisterType(&BanffStandard{}),
 	)
 	return errs.Err
 }

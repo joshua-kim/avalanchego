@@ -19,21 +19,21 @@ type options struct {
 	abortBlock  block.Interface
 }
 
-func (*options) BanffAbortBlock(*block.BanffAbortBlock) error {
+func (*options) BanffAbort(*block.BanffAbort) error {
 	return snowman.ErrNotOracle
 }
 
-func (*options) BanffCommitBlock(*block.BanffCommitBlock) error {
+func (*options) BanffCommitBlock(*block.BanffCommit) error {
 	return snowman.ErrNotOracle
 }
 
-func (o *options) BanffProposalBlock(b *block.BanffProposalBlock) error {
+func (o *options) BanffProposalBlock(b *block.BanffProposal) error {
 	timestamp := b.Timestamp()
 	blkID := b.ID()
 	nextHeight := b.Height() + 1
 
 	var err error
-	o.commitBlock, err = block.NewBanffCommitBlock(timestamp, blkID, nextHeight)
+	o.commitBlock, err = block.NewBanffCommit(timestamp, blkID, nextHeight)
 	if err != nil {
 		return fmt.Errorf(
 			"failed to create commit block: %w",
@@ -41,7 +41,7 @@ func (o *options) BanffProposalBlock(b *block.BanffProposalBlock) error {
 		)
 	}
 
-	o.abortBlock, err = block.NewBanffAbortBlock(timestamp, blkID, nextHeight)
+	o.abortBlock, err = block.NewBanffAbort(timestamp, blkID, nextHeight)
 	if err != nil {
 		return fmt.Errorf(
 			"failed to create abort block: %w",
@@ -51,11 +51,11 @@ func (o *options) BanffProposalBlock(b *block.BanffProposalBlock) error {
 	return nil
 }
 
-func (*options) BanffStandardBlock(*block.BanffStandardBlock) error {
+func (*options) BanffStandardBlock(*block.BanffStandard) error {
 	return snowman.ErrNotOracle
 }
 
-func (*options) ApricotAbortBlock(*block.ApricotAbortBlock) error {
+func (*options) ApricotAbortBlock(*block.ApricotAbort) error {
 	return snowman.ErrNotOracle
 }
 
@@ -63,7 +63,7 @@ func (*options) ApricotCommitBlock(*block.ApricotCommitBlock) error {
 	return snowman.ErrNotOracle
 }
 
-func (o *options) ApricotProposalBlock(b *block.ApricotProposalBlock) error {
+func (o *options) ApricotProposalBlock(b *block.ApricotProposal) error {
 	blkID := b.ID()
 	nextHeight := b.Height() + 1
 
@@ -76,7 +76,7 @@ func (o *options) ApricotProposalBlock(b *block.ApricotProposalBlock) error {
 		)
 	}
 
-	o.abortBlock, err = block.NewApricotAbortBlock(blkID, nextHeight)
+	o.abortBlock, err = block.NewApricotAbort(blkID, nextHeight)
 	if err != nil {
 		return fmt.Errorf(
 			"failed to create abort block: %w",

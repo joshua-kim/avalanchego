@@ -32,42 +32,42 @@ type acceptor struct {
 	bootstrapped *utils.Atomic[bool]
 }
 
-func (a *acceptor) BanffAbortBlock(b *block.BanffAbortBlock) error {
+func (a *acceptor) BanffAbort(b block.BanffAbort) error {
 	return a.abortBlock(b, "banff abort")
 }
 
-func (a *acceptor) BanffCommitBlock(b *block.BanffCommitBlock) error {
+func (a *acceptor) BanffCommitBlock(b block.BanffCommit) error {
 	return a.commitBlock(b, "apricot commit")
 }
 
-func (a *acceptor) BanffProposalBlock(b *block.BanffProposalBlock) error {
+func (a *acceptor) BanffProposalBlock(b block.BanffProposal) error {
 	a.proposalBlock(b, "banff proposal")
 	return nil
 }
 
-func (a *acceptor) BanffStandardBlock(b *block.BanffStandardBlock) error {
+func (a *acceptor) BanffStandardBlock(b block.BanffStandard) error {
 	return a.standardBlock(b, "banff standard")
 }
 
-func (a *acceptor) ApricotAbortBlock(b *block.ApricotAbortBlock) error {
+func (a *acceptor) ApricotAbortBlock(b block.ApricotAbort) error {
 	return a.abortBlock(b, "apricot abort")
 }
 
-func (a *acceptor) ApricotCommitBlock(b *block.ApricotCommitBlock) error {
+func (a *acceptor) ApricotCommitBlock(b block.ApricotCommitBlock) error {
 	return a.commitBlock(b, "apricot commit")
 }
 
-func (a *acceptor) ApricotProposalBlock(b *block.ApricotProposalBlock) error {
+func (a *acceptor) ApricotProposalBlock(b block.ApricotProposal) error {
 	a.proposalBlock(b, "apricot proposal")
 	return nil
 }
 
-func (a *acceptor) ApricotStandardBlock(b *block.ApricotStandardBlock) error {
+func (a *acceptor) ApricotStandardBlock(b block.ApricotStandardBlock) error {
 	return a.standardBlock(b, "apricot standard")
 }
 
-func (a *acceptor) ApricotAtomicBlock(b *block.ApricotAtomic) error {
-	blkID := b.ID()
+func (a *acceptor) ApricotAtomicBlock(b block.ApricotAtomic) error {
+	blkID := b.ID
 	defer a.free(blkID)
 
 	if err := a.commonAccept(b); err != nil {
@@ -227,7 +227,7 @@ func (a *acceptor) proposalBlock(b block.Interface, blockType string) {
 }
 
 func (a *acceptor) standardBlock(b block.Interface, blockType string) error {
-	blkID := b.ID()
+	blkID := b.ID
 	defer a.free(blkID)
 
 	if err := a.commonAccept(b); err != nil {

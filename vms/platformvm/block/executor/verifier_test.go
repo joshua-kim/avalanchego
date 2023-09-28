@@ -78,7 +78,7 @@ func TestVerifierVisitProposalBlock(t *testing.T) {
 	// Serialize this block with a dummy tx
 	// and replace it after creation with the mock tx.
 	// TODO allow serialization of mock txs.
-	apricotBlk, err := block.NewApricotProposalBlock(
+	apricotBlk, err := block.NewApricotProposal(
 		parentID,
 		2,
 		&txs.Tx{
@@ -269,7 +269,7 @@ func TestVerifierVisitStandardBlock(t *testing.T) {
 	// Serialize this block with a dummy tx
 	// and replace it after creation with the mock tx.
 	// TODO allow serialization of mock txs.
-	apricotBlk, err := block.NewApricotStandardBlock(
+	apricotBlk, err := block.NewApricotStandard(
 		parentID,
 		2, /*height*/
 		[]*txs.Tx{
@@ -415,7 +415,7 @@ func TestVerifierVisitAbortBlock(t *testing.T) {
 		verifier: verifier,
 	}
 
-	apricotBlk, err := block.NewApricotAbortBlock(
+	apricotBlk, err := block.NewApricotAbort(
 		parentID,
 		2,
 	)
@@ -470,7 +470,7 @@ func TestVerifyUnverifiedParent(t *testing.T) {
 		backend: backend,
 	}
 
-	blk, err := block.NewApricotAbortBlock(parentID /*not in memory or persisted state*/, 2 /*height*/)
+	blk, err := block.NewApricotAbort(parentID /*not in memory or persisted state*/, 2 /*height*/)
 	require.NoError(err)
 
 	// Set expectations for dependencies.
@@ -544,7 +544,7 @@ func TestBanffAbortBlockTimestampChecks(t *testing.T) {
 
 			// build and verify child block
 			childHeight := parentHeight + 1
-			statelessAbortBlk, err := block.NewBanffAbortBlock(test.childTime, parentID, childHeight)
+			statelessAbortBlk, err := block.NewBanffAbort(test.childTime, parentID, childHeight)
 			require.NoError(err)
 
 			// setup parent state
@@ -637,7 +637,7 @@ func TestBanffCommitBlockTimestampChecks(t *testing.T) {
 
 			// build and verify child block
 			childHeight := parentHeight + 1
-			statelessCommitBlk, err := block.NewBanffCommitBlock(test.childTime, parentID, childHeight)
+			statelessCommitBlk, err := block.NewBanffCommit(test.childTime, parentID, childHeight)
 			require.NoError(err)
 
 			// setup parent state
@@ -741,7 +741,7 @@ func TestVerifierVisitStandardBlockWithDuplicateInputs(t *testing.T) {
 	// Serialize this block with a dummy tx
 	// and replace it after creation with the mock tx.
 	// TODO allow serialization of mock txs.
-	blk, err := block.NewApricotStandardBlock(
+	blk, err := block.NewApricotStandard(
 		parentID,
 		2,
 		[]*txs.Tx{
@@ -803,7 +803,7 @@ func TestVerifierVisitApricotStandardBlockWithProposalBlockParent(t *testing.T) 
 		backend: backend,
 	}
 
-	blk, err := block.NewApricotStandardBlock(
+	blk, err := block.NewApricotStandard(
 		parentID,
 		2,
 		[]*txs.Tx{
@@ -861,7 +861,7 @@ func TestVerifierVisitBanffStandardBlockWithProposalBlockParent(t *testing.T) {
 		backend: backend,
 	}
 
-	blk, err := block.NewBanffStandardBlock(
+	blk, err := block.NewBanff(
 		parentTime.Add(time.Second),
 		parentID,
 		2,
@@ -952,7 +952,7 @@ func TestVerifierVisitBanffCommitBlockUnexpectedParentState(t *testing.T) {
 		},
 	}
 
-	blk, err := block.NewBanffCommitBlock(
+	blk, err := block.NewBanffCommit(
 		timestamp,
 		parentID,
 		2,
@@ -995,7 +995,7 @@ func TestVerifierVisitApricotAbortBlockUnexpectedParentState(t *testing.T) {
 		},
 	}
 
-	blk, err := block.NewApricotAbortBlock(
+	blk, err := block.NewApricotAbort(
 		parentID,
 		2,
 	)
@@ -1039,7 +1039,7 @@ func TestVerifierVisitBanffAbortBlockUnexpectedParentState(t *testing.T) {
 		},
 	}
 
-	blk, err := block.NewBanffAbortBlock(
+	blk, err := block.NewBanffAbort(
 		timestamp,
 		parentID,
 		2,
@@ -1050,6 +1050,6 @@ func TestVerifierVisitBanffAbortBlockUnexpectedParentState(t *testing.T) {
 	parentStatelessBlk.EXPECT().Height().Return(uint64(1)).Times(1)
 
 	// Verify the block.
-	err = verifier.BanffAbortBlock(blk)
+	err = verifier.BanffAbort(blk)
 	require.ErrorIs(err, state.ErrMissingParentState)
 }

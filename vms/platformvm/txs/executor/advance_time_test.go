@@ -32,7 +32,7 @@ func TestAdvanceTimeTxUpdatePrimaryNetworkStakers(t *testing.T) {
 	}()
 	dummyHeight := uint64(1)
 
-	// Case: Timestamp is after next validator start time
+	// Case: Time is after next validator start time
 	// Add a pending validator
 	pendingValidatorStartTime := defaultGenesisTime.Add(1 * time.Second)
 	pendingValidatorEndTime := pendingValidatorStartTime.Add(defaultMinStakingDuration)
@@ -113,7 +113,7 @@ func TestAdvanceTimeTxTimestampTooLate(t *testing.T) {
 	env := newEnvironment(t, false /*=postBanff*/, false /*=postCortina*/)
 	env.ctx.Lock.Lock()
 
-	// Case: Timestamp is after next validator start time
+	// Case: Time is after next validator start time
 	// Add a pending validator
 	pendingValidatorStartTime := defaultGenesisTime.Add(1 * time.Second)
 	pendingValidatorEndTime := pendingValidatorStartTime.Add(defaultMinStakingDuration)
@@ -143,7 +143,7 @@ func TestAdvanceTimeTxTimestampTooLate(t *testing.T) {
 
 	require.NoError(shutdownEnvironment(env))
 
-	// Case: Timestamp is after next validator end time
+	// Case: Time is after next validator end time
 	env = newEnvironment(t, false /*=postBanff*/, false /*=postCortina*/)
 	env.ctx.Lock.Lock()
 	defer func() {
@@ -627,7 +627,7 @@ func TestAdvanceTimeTxDelegatorStakerWeight(t *testing.T) {
 	}()
 	dummyHeight := uint64(1)
 
-	// Case: Timestamp is after next validator start time
+	// Case: Time is after next validator start time
 	// Add a pending validator
 	pendingValidatorStartTime := defaultGenesisTime.Add(1 * time.Second)
 	pendingValidatorEndTime := pendingValidatorStartTime.Add(defaultMaxStakingDuration)
@@ -736,7 +736,7 @@ func TestAdvanceTimeTxDelegatorStakers(t *testing.T) {
 	}()
 	dummyHeight := uint64(1)
 
-	// Case: Timestamp is after next validator start time
+	// Case: Time is after next validator start time
 	// Add a pending validator
 	pendingValidatorStartTime := defaultGenesisTime.Add(1 * time.Second)
 	pendingValidatorEndTime := pendingValidatorStartTime.Add(defaultMinStakingDuration)

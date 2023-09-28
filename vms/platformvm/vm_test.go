@@ -518,7 +518,7 @@ func TestInvalidAddValidatorCommit(t *testing.T) {
 
 	preferredID := preferred.ID()
 	preferredHeight := preferred.Height()
-	statelessBlk, err := block.NewBanffStandardBlock(
+	statelessBlk, err := block.NewBanff(
 		preferred.Timestamp(),
 		preferredID,
 		preferredHeight+1,
@@ -732,9 +732,9 @@ func TestRewardValidatorAccept(t *testing.T) {
 	require.NoError(err)
 
 	commit := options[0].(*blockexecutor.Block)
-	require.IsType(&block.BanffCommitBlock{}, commit.Interface)
+	require.IsType(&block.BanffCommit{}, commit.Interface)
 	abort := options[1].(*blockexecutor.Block)
-	require.IsType(&block.BanffAbortBlock{}, abort.Interface)
+	require.IsType(&block.BanffAbort{}, abort.Interface)
 
 	require.NoError(oracleBlk.Accept(context.Background()))
 	require.NoError(commit.Verify(context.Background()))
@@ -774,10 +774,10 @@ func TestRewardValidatorAccept(t *testing.T) {
 	require.NoError(err)
 
 	commit = options[0].(*blockexecutor.Block)
-	require.IsType(&block.BanffCommitBlock{}, commit.Interface)
+	require.IsType(&block.BanffCommit{}, commit.Interface)
 
 	abort = options[1].(*blockexecutor.Block)
-	require.IsType(&block.BanffAbortBlock{}, abort.Interface)
+	require.IsType(&block.BanffAbort{}, abort.Interface)
 
 	require.NoError(oracleBlk.Accept(context.Background()))
 	require.NoError(commit.Verify(context.Background()))
@@ -826,10 +826,10 @@ func TestRewardValidatorReject(t *testing.T) {
 	require.NoError(err)
 
 	commit := options[0].(*blockexecutor.Block)
-	require.IsType(&block.BanffCommitBlock{}, commit.Interface)
+	require.IsType(&block.BanffCommit{}, commit.Interface)
 
 	abort := options[1].(*blockexecutor.Block)
-	require.IsType(&block.BanffAbortBlock{}, abort.Interface)
+	require.IsType(&block.BanffAbort{}, abort.Interface)
 
 	require.NoError(oracleBlk.Accept(context.Background()))
 	require.NoError(commit.Verify(context.Background()))
@@ -865,10 +865,10 @@ func TestRewardValidatorReject(t *testing.T) {
 	require.NoError(err)
 
 	commit = options[0].(*blockexecutor.Block)
-	require.IsType(&block.BanffCommitBlock{}, commit.Interface)
+	require.IsType(&block.BanffCommit{}, commit.Interface)
 
 	abort = options[1].(*blockexecutor.Block)
-	require.IsType(&block.BanffAbortBlock{}, abort.Interface)
+	require.IsType(&block.BanffAbort{}, abort.Interface)
 
 	require.NoError(blk.Accept(context.Background()))
 	require.NoError(commit.Verify(context.Background()))
@@ -917,10 +917,10 @@ func TestRewardValidatorPreferred(t *testing.T) {
 	require.NoError(err)
 
 	commit := options[0].(*blockexecutor.Block)
-	require.IsType(&block.BanffCommitBlock{}, commit.Interface)
+	require.IsType(&block.BanffCommit{}, commit.Interface)
 
 	abort := options[1].(*blockexecutor.Block)
-	require.IsType(&block.BanffAbortBlock{}, abort.Interface)
+	require.IsType(&block.BanffAbort{}, abort.Interface)
 
 	require.NoError(oracleBlk.Accept(context.Background()))
 	require.NoError(commit.Verify(context.Background()))
@@ -957,10 +957,10 @@ func TestRewardValidatorPreferred(t *testing.T) {
 	require.NoError(err)
 
 	commit = options[0].(*blockexecutor.Block)
-	require.IsType(&block.BanffCommitBlock{}, commit.Interface)
+	require.IsType(&block.BanffCommit{}, commit.Interface)
 
 	abort = options[1].(*blockexecutor.Block)
-	require.IsType(&block.BanffAbortBlock{}, abort.Interface)
+	require.IsType(&block.BanffAbort{}, abort.Interface)
 
 	require.NoError(blk.Accept(context.Background()))
 	require.NoError(commit.Verify(context.Background()))
@@ -1386,7 +1386,7 @@ func TestRestartFullyAccepted(t *testing.T) {
 	}}
 	require.NoError(tx.Initialize(txs.Codec))
 
-	statelessBlk, err := block.NewBanffStandardBlock(
+	statelessBlk, err := block.NewBanff(
 		nextChainTime,
 		preferredID,
 		preferredHeight+1,
@@ -1525,7 +1525,7 @@ func TestBootstrapPartiallyAccepted(t *testing.T) {
 	nextChainTime := initialClkTime.Add(time.Second)
 	preferredID := preferred.ID()
 	preferredHeight := preferred.Height()
-	statelessBlk, err := block.NewBanffStandardBlock(
+	statelessBlk, err := block.NewBanff(
 		nextChainTime,
 		preferredID,
 		preferredHeight+1,
@@ -1839,7 +1839,7 @@ func TestUnverifiedParent(t *testing.T) {
 	preferredID := preferred.ID()
 	preferredHeight := preferred.Height()
 
-	statelessBlk, err := block.NewBanffStandardBlock(
+	statelessBlk, err := block.NewBanff(
 		nextChainTime,
 		preferredID,
 		preferredHeight+1,
@@ -1870,7 +1870,7 @@ func TestUnverifiedParent(t *testing.T) {
 	require.NoError(tx1.Initialize(txs.Codec))
 	nextChainTime = nextChainTime.Add(time.Second)
 	vm.clock.Set(nextChainTime)
-	statelessSecondAdvanceTimeBlk, err := block.NewBanffStandardBlock(
+	statelessSecondAdvanceTimeBlk, err := block.NewBanff(
 		nextChainTime,
 		firstAdvanceTimeBlk.ID(),
 		firstAdvanceTimeBlk.Height()+1,
@@ -2032,10 +2032,10 @@ func TestUptimeDisallowedWithRestart(t *testing.T) {
 	require.NoError(err)
 
 	commit := options[0].(*blockexecutor.Block)
-	require.IsType(&block.BanffCommitBlock{}, commit.Interface)
+	require.IsType(&block.BanffCommit{}, commit.Interface)
 
 	abort := options[1].(*blockexecutor.Block)
-	require.IsType(&block.BanffAbortBlock{}, abort.Interface)
+	require.IsType(&block.BanffAbort{}, abort.Interface)
 
 	require.NoError(oracleBlk.Accept(context.Background()))
 	require.NoError(commit.Verify(context.Background()))
@@ -2073,10 +2073,10 @@ func TestUptimeDisallowedWithRestart(t *testing.T) {
 	require.NoError(err)
 
 	commit = options[0].(*blockexecutor.Block)
-	require.IsType(&block.BanffCommitBlock{}, commit.Interface)
+	require.IsType(&block.BanffCommit{}, commit.Interface)
 
 	abort = options[1].(*blockexecutor.Block)
-	require.IsType(&block.BanffAbortBlock{}, abort.Interface)
+	require.IsType(&block.BanffAbort{}, abort.Interface)
 
 	require.NoError(blk.Accept(context.Background()))
 	require.NoError(commit.Verify(context.Background()))
@@ -2168,10 +2168,10 @@ func TestUptimeDisallowedAfterNeverConnecting(t *testing.T) {
 	require.NoError(err)
 
 	commit := options[0].(*blockexecutor.Block)
-	require.IsType(&block.BanffCommitBlock{}, commit.Interface)
+	require.IsType(&block.BanffCommit{}, commit.Interface)
 
 	abort := options[1].(*blockexecutor.Block)
-	require.IsType(&block.BanffAbortBlock{}, abort.Interface)
+	require.IsType(&block.BanffAbort{}, abort.Interface)
 
 	require.NoError(oracleBlk.Accept(context.Background()))
 	require.NoError(commit.Verify(context.Background()))
@@ -2194,10 +2194,10 @@ func TestUptimeDisallowedAfterNeverConnecting(t *testing.T) {
 	require.NoError(err)
 
 	commit = options[0].(*blockexecutor.Block)
-	require.IsType(&block.BanffCommitBlock{}, commit.Interface)
+	require.IsType(&block.BanffCommit{}, commit.Interface)
 
 	abort = options[1].(*blockexecutor.Block)
-	require.IsType(&block.BanffAbortBlock{}, abort.Interface)
+	require.IsType(&block.BanffAbort{}, abort.Interface)
 
 	require.NoError(blk.Accept(context.Background()))
 	require.NoError(commit.Verify(context.Background()))
@@ -2289,7 +2289,7 @@ func TestRemovePermissionedValidatorDuringAddPending(t *testing.T) {
 	)
 	require.NoError(err)
 
-	statelessBlock, err := block.NewBanffStandardBlock(
+	statelessBlock, err := block.NewBanff(
 		vm.state.GetTimestamp(),
 		createSubnetBlock.ID(),
 		createSubnetBlock.Height()+1,

@@ -136,7 +136,7 @@ func TestBlockOptions(t *testing.T) {
 		{
 			name: "apricot proposal block; commit preferred",
 			blkF: func() *Block {
-				innerBlk := &block.ApricotProposalBlock{}
+				innerBlk := &block.ApricotProposal{}
 				blkID := innerBlk.ID()
 
 				manager := &manager{
@@ -161,7 +161,7 @@ func TestBlockOptions(t *testing.T) {
 		{
 			name: "apricot proposal block; abort preferred",
 			blkF: func() *Block {
-				innerBlk := &block.ApricotProposalBlock{}
+				innerBlk := &block.ApricotProposal{}
 				blkID := innerBlk.ID()
 
 				manager := &manager{
@@ -177,12 +177,12 @@ func TestBlockOptions(t *testing.T) {
 					manager:   manager,
 				}
 			},
-			expectedPreferenceType: &block.ApricotAbortBlock{},
+			expectedPreferenceType: &block.ApricotAbort{},
 		},
 		{
 			name: "banff proposal block; commit preferred",
 			blkF: func() *Block {
-				innerBlk := &block.BanffProposalBlock{}
+				innerBlk := &block.BanffProposal{}
 				blkID := innerBlk.ID()
 
 				manager := &manager{
@@ -202,12 +202,12 @@ func TestBlockOptions(t *testing.T) {
 					manager:   manager,
 				}
 			},
-			expectedPreferenceType: &block.BanffCommitBlock{},
+			expectedPreferenceType: &block.BanffCommit{},
 		},
 		{
 			name: "banff proposal block; abort preferred",
 			blkF: func() *Block {
-				innerBlk := &block.BanffProposalBlock{}
+				innerBlk := &block.BanffProposal{}
 				blkID := innerBlk.ID()
 
 				manager := &manager{
@@ -223,13 +223,13 @@ func TestBlockOptions(t *testing.T) {
 					manager:   manager,
 				}
 			},
-			expectedPreferenceType: &block.BanffAbortBlock{},
+			expectedPreferenceType: &block.BanffAbort{},
 		},
 		{
 			name: "non oracle block",
 			blkF: func() *Block {
 				return &Block{
-					Interface: &block.BanffStandardBlock{},
+					Interface: &block.BanffStandard{},
 					manager:   &manager{},
 				}
 			},

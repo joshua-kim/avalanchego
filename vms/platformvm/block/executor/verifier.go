@@ -21,8 +21,8 @@ var (
 	_ block.Visitor = (*verifier)(nil)
 
 	errApricotBlockIssuedAfterFork                = errors.New("apricot block issued after fork")
-	errBanffProposalBlockWithMultipleTransactions = errors.New("BanffProposalBlock contains multiple transactions")
-	errBanffStandardBlockWithoutChanges           = errors.New("BanffStandardBlock performs no state changes")
+	errBanffProposalBlockWithMultipleTransactions = errors.New("BanffProposal contains multiple transactions")
+	errBanffStandardBlockWithoutChanges           = errors.New("BanffStandard performs no state changes")
 	errIncorrectBlockHeight                       = errors.New("incorrect block height")
 	errChildBlockEarlierThanParent                = errors.New("proposed timestamp before current chain time")
 	errConflictingBatchTxs                        = errors.New("block contains conflicting transactions")
@@ -36,21 +36,21 @@ type verifier struct {
 	txExecutorBackend *executor.Backend
 }
 
-func (v *verifier) BanffAbortBlock(b *block.BanffAbortBlock) error {
+func (v *verifier) BanffAbort(b *block.BanffAbort) error {
 	if err := v.banffOptionBlock(b); err != nil {
 		return err
 	}
 	return v.abortBlock(b)
 }
 
-func (v *verifier) BanffCommitBlock(b *block.BanffCommitBlock) error {
+func (v *verifier) BanffCommitBlock(b *block.BanffCommit) error {
 	if err := v.banffOptionBlock(b); err != nil {
 		return err
 	}
 	return v.commitBlock(b)
 }
 
-func (v *verifier) BanffProposalBlock(b *block.BanffProposalBlock) error {
+func (v *verifier) BanffProposalBlock(b *block.BanffProposal) error {
 	if len(b.Transactions) != 0 {
 		return errBanffProposalBlockWithMultipleTransactions
 	}
@@ -86,10 +86,10 @@ func (v *verifier) BanffProposalBlock(b *block.BanffProposalBlock) error {
 	onAbortState.SetTimestamp(nextChainTime)
 	changes.Apply(onAbortState)
 
-	return v.proposalBlock(&b.ApricotProposalBlock, onCommitState, onAbortState)
+	return v.proposalBlock(&b.ApricotProposal, onCommitState, onAbortState)
 }
 
-func (v *verifier) BanffStandardBlock(b *block.BanffStandardBlock) error {
+func (v *verifier) BanffStandardBlock(b *block.BanffStandard) error {
 	if err := v.banffNonOptionBlock(b); err != nil {
 		return err
 	}
@@ -123,7 +123,7 @@ func (v *verifier) BanffStandardBlock(b *block.BanffStandardBlock) error {
 	return v.standardBlock(&b.ApricotStandardBlock, onAcceptState)
 }
 
-func (v *verifier) ApricotAbortBlock(b *block.ApricotAbortBlock) error {
+func (v *verifier) ApricotAbortBlock(b *block.ApricotAbort) error {
 	if err := v.apricotCommonBlock(b); err != nil {
 		return err
 	}
@@ -137,7 +137,7 @@ func (v *verifier) ApricotCommitBlock(b *block.ApricotCommitBlock) error {
 	return v.commitBlock(b)
 }
 
-func (v *verifier) ApricotProposalBlock(b *block.ApricotProposalBlock) error {
+func (v *verifier) ApricotProposalBlock(b *block.ApricotProposal) error {
 	if err := v.apricotCommonBlock(b); err != nil {
 		return err
 	}
@@ -228,12 +228,12 @@ func (v *verifier) banffOptionBlock(b block.Banff) error {
 	}
 
 	// Banff option blocks must be uniquely generated from the
-	// BanffProposalBlock. This means that the timestamp must be
+	// BanffProposal. This means that the timestamp must be
 	// standardized to a specific value. Therefore, we require the timestamp to
 	// be equal to the parents timestamp.
 	parentID := b.Parent()
 	parentBlkTime := v.getTimestamp(parentID)
-	blkTime := b.Timestamp()
+	blkTime := b.Time()
 	if !blkTime.Equal(parentBlkTime) {
 		return fmt.Errorf(
 			"%w parent block timestamp (%s) option block timestamp (%s)",
@@ -256,7 +256,7 @@ func (v *verifier) banffNonOptionBlock(b block.Banff) error {
 		return fmt.Errorf("%w: %s", state.ErrMissingParentState, parentID)
 	}
 
-	newChainTime := b.Timestamp()
+	newChainTime := b.Time()
 	parentChainTime := parentState.GetTimestamp()
 	if newChainTime.Before(parentChainTime) {
 		return fmt.Errorf(
@@ -286,7 +286,7 @@ func (v *verifier) apricotCommonBlock(b block.Interface) error {
 	// AdvanceTimeTxs. This means that this block's timestamp will be equal to
 	// the parent block's timestamp; unless this is a CommitBlock. In order for
 	// the timestamp of the CommitBlock to be after the Banff activation,
-	// the parent ApricotProposalBlock must include an AdvanceTimeTx with a
+	// the parent ApricotProposal must include an AdvanceTimeTx with a
 	// timestamp after the Banff timestamp. This is verified not to occur
 	// during the verification of the ProposalBlock.
 	parentID := b.Parent()
@@ -353,7 +353,7 @@ func (v *verifier) commitBlock(b block.Interface) error {
 
 // proposalBlock populates the state of this block if [nil] is returned
 func (v *verifier) proposalBlock(
-	b *block.ApricotProposalBlock,
+	b *block.ApricotProposal,
 	onCommitState state.Diff,
 	onAbortState state.Diff,
 ) error {

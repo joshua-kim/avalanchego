@@ -8,58 +8,55 @@ import (
 
 	"github.com/ava-labs/avalanchego/ids"
 	"github.com/ava-labs/avalanchego/snow"
-	"github.com/ava-labs/avalanchego/vms/platformvm/txs"
 )
 
 var (
-	_ Banff     = (*BanffCommitBlock)(nil)
+	_ Interface = (*BanffCommit)(nil)
 	_ Interface = (*ApricotCommitBlock)(nil)
 )
 
-type BanffCommitBlock struct {
-	Time               uint64 `serialize:"true" json:"time"`
-	ApricotCommitBlock `serialize:"true"`
+type BanffCommit struct{}
+
+func (*BanffCommit) initialize([]byte) error {
+	return nil
 }
 
-func (b *BanffCommitBlock) Timestamp() time.Time {
-	return time.Unix(int64(b.Time), 0)
+func (*BanffCommit) InitCtx(*snow.Context) {
+	return
 }
 
-func (b *BanffCommitBlock) Visit(v Visitor) error {
+func (b *BanffCommit) Visit(v Visitor) error {
 	return v.BanffCommitBlock(b)
 }
 
-func NewBanffCommitBlock(
+func NewBanffCommit(
 	timestamp time.Time,
 	parentID ids.ID,
 	height uint64,
-) (*BanffCommitBlock, error) {
-	blk := &BanffCommitBlock{
-		Time: uint64(timestamp.Unix()),
-		ApricotCommitBlock: ApricotCommitBlock{
-			CommonBlock: CommonBlock{
-				PrntID: parentID,
-				Hght:   height,
+) (Banff, error) {
+	blk := Banff{
+		Block: Block{
+			Interface: &BanffCommit{},
+			Data: Data{
+				ID:     ids.ID{},
+				Parent: parentID,
+				Height: height,
 			},
+			Bytes: nil,
 		},
+		Time: timestamp,
 	}
-	return blk, initialize(blk)
+
+	return blk, initializeBanff(blk)
 }
 
-type ApricotCommitBlock struct {
-	CommonBlock `serialize:"true"`
-}
+type ApricotCommitBlock struct{}
 
-func (b *ApricotCommitBlock) initialize(bytes []byte) error {
-	b.CommonBlock.initialize(bytes)
+func (*ApricotCommitBlock) initialize([]byte) error {
 	return nil
 }
 
 func (*ApricotCommitBlock) InitCtx(*snow.Context) {}
-
-func (*ApricotCommitBlock) Txs() []*txs.Tx {
-	return nil
-}
 
 func (b *ApricotCommitBlock) Visit(v Visitor) error {
 	return v.ApricotCommitBlock(b)
@@ -68,12 +65,16 @@ func (b *ApricotCommitBlock) Visit(v Visitor) error {
 func NewApricotCommitBlock(
 	parentID ids.ID,
 	height uint64,
-) (*ApricotCommitBlock, error) {
-	blk := &ApricotCommitBlock{
-		CommonBlock: CommonBlock{
-			PrntID: parentID,
-			Hght:   height,
+) (Block, error) {
+	blk := Block{
+		Interface: &ApricotCommitBlock{},
+		Data: Data{
+			ID:     ids.ID{},
+			Parent: parentID,
+			Height: height,
 		},
+		Bytes: nil,
 	}
+
 	return blk, initialize(blk)
 }

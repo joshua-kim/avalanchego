@@ -30,7 +30,7 @@ func TestStandardBlocks(t *testing.T) {
 
 	for _, cdc := range []codec.Manager{Codec, GenesisCodec} {
 		// build block
-		apricotStandardBlk, err := NewApricotStandardBlock(parentID, height, txs)
+		apricotStandardBlk, err := NewApricotStandard(parentID, height, txs)
 		require.NoError(err)
 
 		// parse block
@@ -47,7 +47,7 @@ func TestStandardBlocks(t *testing.T) {
 		require.Equal(txs, parsed.Txs())
 
 		// check that banff standard block can be built and parsed
-		banffStandardBlk, err := NewBanffStandardBlock(blkTimestamp, parentID, height, txs)
+		banffStandardBlk, err := NewBanff(blkTimestamp, parentID, height, txs)
 		require.NoError(err)
 
 		// parse block
@@ -59,8 +59,8 @@ func TestStandardBlocks(t *testing.T) {
 		require.Equal(banffStandardBlk.Bytes(), parsed.Bytes())
 		require.Equal(banffStandardBlk.Parent(), parsed.Parent())
 		require.Equal(banffStandardBlk.Height(), parsed.Height())
-		require.IsType(&BanffStandardBlock{}, parsed)
-		parsedBanffStandardBlk := parsed.(*BanffStandardBlock)
+		require.IsType(&BanffStandard{}, parsed)
+		parsedBanffStandardBlk := parsed.(*BanffStandard)
 		require.Equal(txs, parsedBanffStandardBlk.Txs())
 
 		// timestamp check for banff blocks only
@@ -82,7 +82,7 @@ func TestProposalBlocks(t *testing.T) {
 
 	for _, cdc := range []codec.Manager{Codec, GenesisCodec} {
 		// build block
-		apricotProposalBlk, err := NewApricotProposalBlock(
+		apricotProposalBlk, err := NewApricotProposal(
 			parentID,
 			height,
 			tx,
@@ -99,8 +99,8 @@ func TestProposalBlocks(t *testing.T) {
 		require.Equal(apricotProposalBlk.Parent(), parsed.Parent())
 		require.Equal(apricotProposalBlk.Height(), parsed.Height())
 
-		require.IsType(&ApricotProposalBlock{}, parsed)
-		parsedApricotProposalBlk := parsed.(*ApricotProposalBlock)
+		require.IsType(&ApricotProposal{}, parsed)
+		parsedApricotProposalBlk := parsed.(*ApricotProposal)
 		require.Equal([]*txs.Tx{tx}, parsedApricotProposalBlk.Txs())
 
 		// check that banff proposal block can be built and parsed
@@ -121,8 +121,8 @@ func TestProposalBlocks(t *testing.T) {
 		require.Equal(banffProposalBlk.Bytes(), parsed.Bytes())
 		require.Equal(banffProposalBlk.Parent(), banffProposalBlk.Parent())
 		require.Equal(banffProposalBlk.Height(), parsed.Height())
-		require.IsType(&BanffProposalBlock{}, parsed)
-		parsedBanffProposalBlk := parsed.(*BanffProposalBlock)
+		require.IsType(&BanffProposal{}, parsed)
+		parsedBanffProposalBlk := parsed.(*BanffProposal)
 		require.Equal([]*txs.Tx{tx}, parsedBanffProposalBlk.Txs())
 
 		// timestamp check for banff blocks only
@@ -156,7 +156,7 @@ func TestCommitBlock(t *testing.T) {
 		require.Equal(apricotCommitBlk.Height(), parsed.Height())
 
 		// check that banff commit block can be built and parsed
-		banffCommitBlk, err := NewBanffCommitBlock(blkTimestamp, parentID, height)
+		banffCommitBlk, err := NewBanffCommit(blkTimestamp, parentID, height)
 		require.NoError(err)
 
 		// parse block
@@ -170,8 +170,8 @@ func TestCommitBlock(t *testing.T) {
 		require.Equal(banffCommitBlk.Height(), parsed.Height())
 
 		// timestamp check for banff blocks only
-		require.IsType(&BanffCommitBlock{}, parsed)
-		parsedBanffCommitBlk := parsed.(*BanffCommitBlock)
+		require.IsType(&BanffCommit{}, parsed)
+		parsedBanffCommitBlk := parsed.(*BanffCommit)
 		require.Equal(banffCommitBlk.Timestamp(), parsedBanffCommitBlk.Timestamp())
 	}
 }
@@ -185,7 +185,7 @@ func TestAbortBlock(t *testing.T) {
 
 	for _, cdc := range []codec.Manager{Codec, GenesisCodec} {
 		// build block
-		apricotAbortBlk, err := NewApricotAbortBlock(parentID, height)
+		apricotAbortBlk, err := NewApricotAbort(parentID, height)
 		require.NoError(err)
 
 		// parse block
@@ -199,7 +199,7 @@ func TestAbortBlock(t *testing.T) {
 		require.Equal(apricotAbortBlk.Height(), parsed.Height())
 
 		// check that banff abort block can be built and parsed
-		banffAbortBlk, err := NewBanffAbortBlock(blkTimestamp, parentID, height)
+		banffAbortBlk, err := NewBanffAbort(blkTimestamp, parentID, height)
 		require.NoError(err)
 
 		// parse block
@@ -213,9 +213,9 @@ func TestAbortBlock(t *testing.T) {
 		require.Equal(banffAbortBlk.Height(), parsed.Height())
 
 		// timestamp check for banff blocks only
-		require.IsType(&BanffAbortBlock{}, parsed)
-		parsedBanffAbortBlk := parsed.(*BanffAbortBlock)
-		require.Equal(banffAbortBlk.Timestamp(), parsedBanffAbortBlk.Timestamp())
+		require.IsType(&BanffAbort{}, parsed)
+		parsedBanffAbortBlk := parsed.(*BanffAbort)
+		require.Equal(banffAbortBlk.Time(), parsedBanffAbortBlk.Timestamp())
 	}
 }
 

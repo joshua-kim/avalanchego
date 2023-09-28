@@ -143,7 +143,7 @@ func (mr *MockPostForkBlockMockRecorder) Status() *gomock.Call {
 // Timestamp mocks base method.
 func (m *MockPostForkBlock) Timestamp() time.Time {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "Timestamp")
+	ret := m.ctrl.Call(m, "Time")
 	ret0, _ := ret[0].(time.Time)
 	return ret0
 }
@@ -151,7 +151,7 @@ func (m *MockPostForkBlock) Timestamp() time.Time {
 // Timestamp indicates an expected call of Timestamp.
 func (mr *MockPostForkBlockMockRecorder) Timestamp() *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Timestamp", reflect.TypeOf((*MockPostForkBlock)(nil).Timestamp))
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Time", reflect.TypeOf((*MockPostForkBlock)(nil).Timestamp))
 }
 
 // Verify mocks base method.

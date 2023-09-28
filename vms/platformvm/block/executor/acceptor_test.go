@@ -32,7 +32,7 @@ func TestAcceptorVisitProposalBlock(t *testing.T) {
 
 	lastAcceptedID := ids.GenerateTestID()
 
-	blk, err := block.NewApricotProposalBlock(
+	blk, err := block.NewApricotProposal(
 		lastAcceptedID,
 		1,
 		&txs.Tx{
@@ -179,7 +179,7 @@ func TestAcceptorVisitStandardBlock(t *testing.T) {
 		validators: validators.TestManager,
 	}
 
-	blk, err := block.NewBanffStandardBlock(
+	blk, err := block.NewBanff(
 		clk.Time(),
 		parentID,
 		1,
@@ -361,7 +361,7 @@ func TestAcceptorVisitAbortBlock(t *testing.T) {
 		bootstrapped: &utils.Atomic[bool]{},
 	}
 
-	blk, err := block.NewApricotAbortBlock(parentID, 1 /*height*/)
+	blk, err := block.NewApricotAbort(parentID, 1 /*height*/)
 	require.NoError(err)
 
 	err = acceptor.ApricotAbortBlock(blk)
@@ -427,5 +427,5 @@ func TestAcceptorVisitAbortBlock(t *testing.T) {
 	)
 
 	require.NoError(acceptor.ApricotAbortBlock(blk))
-	require.Equal(blk.ID(), acceptor.backend.lastAccepted)
+	require.Equal(blk.ID, acceptor.backend.lastAccepted)
 }

@@ -56,17 +56,17 @@ func newBlockMetric(
 	return blockMetric
 }
 
-func (m *blockMetrics) BanffAbortBlock(*block.BanffAbortBlock) error {
+func (m *blockMetrics) BanffAbort(*block.BanffAbort) error {
 	m.numAbortBlocks.Inc()
 	return nil
 }
 
-func (m *blockMetrics) BanffCommitBlock(*block.BanffCommitBlock) error {
+func (m *blockMetrics) BanffCommitBlock(*block.BanffCommit) error {
 	m.numCommitBlocks.Inc()
 	return nil
 }
 
-func (m *blockMetrics) BanffProposalBlock(b *block.BanffProposalBlock) error {
+func (m *blockMetrics) BanffProposalBlock(b *block.BanffProposal) error {
 	m.numProposalBlocks.Inc()
 	for _, tx := range b.Transactions {
 		if err := tx.Unsigned.Visit(m.txMetrics); err != nil {
@@ -76,7 +76,7 @@ func (m *blockMetrics) BanffProposalBlock(b *block.BanffProposalBlock) error {
 	return b.Tx.Unsigned.Visit(m.txMetrics)
 }
 
-func (m *blockMetrics) BanffStandardBlock(b *block.BanffStandardBlock) error {
+func (m *blockMetrics) BanffStandardBlock(b *block.BanffStandard) error {
 	m.numStandardBlocks.Inc()
 	for _, tx := range b.Transactions {
 		if err := tx.Unsigned.Visit(m.txMetrics); err != nil {
@@ -86,7 +86,7 @@ func (m *blockMetrics) BanffStandardBlock(b *block.BanffStandardBlock) error {
 	return nil
 }
 
-func (m *blockMetrics) ApricotAbortBlock(*block.ApricotAbortBlock) error {
+func (m *blockMetrics) ApricotAbortBlock(*block.ApricotAbort) error {
 	m.numAbortBlocks.Inc()
 	return nil
 }
@@ -96,7 +96,7 @@ func (m *blockMetrics) ApricotCommitBlock(*block.ApricotCommitBlock) error {
 	return nil
 }
 
-func (m *blockMetrics) ApricotProposalBlock(b *block.ApricotProposalBlock) error {
+func (m *blockMetrics) ApricotProposalBlock(b *block.ApricotProposal) error {
 	m.numProposalBlocks.Inc()
 	return b.Tx.Unsigned.Visit(m.txMetrics)
 }

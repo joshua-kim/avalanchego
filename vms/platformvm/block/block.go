@@ -5,50 +5,85 @@ package block
 
 import (
 	"fmt"
+	"github.com/ava-labs/avalanchego/utils/hashing"
 	"time"
 
 	"github.com/ava-labs/avalanchego/ids"
 	"github.com/ava-labs/avalanchego/snow"
-	"github.com/ava-labs/avalanchego/vms/platformvm/txs"
 )
+
+var _ Interface = (*Banff)(nil)
+
+// Interface implements block-specific behavior
+type Interface interface {
+	snow.ContextInitializable
+
+	// note: initialize does not assume that block transactions
+	// are initialized, and initializes them itself if they aren't.
+	initialize(bytes []byte) error
+
+	Verify() error
+	Accept() error
+	Reject() error
+}
 
 // Data common across all blocks
 type Data struct {
-	ID     ids.ID   `serialize:"true"`
-	Parent ids.ID   `serialize:"true"`
-	Bytes  []byte   `serialize:"true"`
-	Height uint64   `serialize:"true"`
-	Txs    []txs.Tx `serialize:"true"`
+	ID     ids.ID `serialize:"true"`
+	Parent ids.ID `serialize:"true" json:"parentID"`
+	Height uint64 `serialize:"true"`
 }
 
 // Block in the P-Chain
 type Block struct {
 	Interface
-	Data `serialize:"true"`
+	Data  `serialize:"true"`
+	Bytes []byte `serialize:"true"`
 }
 
-// Interface implements block-specific behavior
-type Interface interface {
-	snow.ContextInitializable
-	// Visit calls [visitor] with this block's concrete type
-	Visit(visitor Visitor) error
+func (b *Block) initialize(bytes []byte) error {
+	b.ID = hashing.ComputeHash256Array(bytes)
+	b.Bytes = bytes
 
-	// note: initialize does not assume that block transactions
-	// are initialized, and initializes them itself if they aren't.
-	initialize(bytes []byte) error
+	bytes, err := Codec.Marshal(Version, b)
+	if err != nil {
+		return fmt.Errorf("couldn't marshal block: %w", err)
+	}
+
+	return b.Interface.initialize(bytes)
+}
+
+func (b *Block) Verify() error {
+	return nil
+}
+
+func (b *Block) Accept() error {
+	return nil
+}
+
+func (b *Block) Reject() error {
+	return nil
 }
 
 type Banff struct {
 	Block
-	Timestamp time.Time
+	Time time.Time `serialize:"true"`
 }
 
-func initialize(blk Interface) error {
-	// We serialize this block as a pointer so that it can be deserialized into
-	// a Interface
-	bytes, err := Codec.Marshal(Version, &blk)
+func initializeBanff(blk Banff) error {
+	bytes, err := Codec.Marshal(Version, blk)
 	if err != nil {
 		return fmt.Errorf("couldn't marshal block: %w", err)
 	}
+
+	return blk.initialize(bytes)
+}
+
+func initialize(blk Block) error {
+	bytes, err := Codec.Marshal(Version, blk)
+	if err != nil {
+		return fmt.Errorf("couldn't marshal block: %w", err)
+	}
+
 	return blk.initialize(bytes)
 }

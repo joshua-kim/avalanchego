@@ -204,7 +204,7 @@ func addPrimaryValidator(
 		Priority:        txs.PrimaryNetworkValidatorCurrentPriority,
 	})
 
-	blk, err := block.NewBanffStandardBlock(startTime, ids.GenerateTestID(), height, nil)
+	blk, err := block.NewBanff(startTime, ids.GenerateTestID(), height, nil)
 	if err != nil {
 		return ids.EmptyNodeID, err
 	}
@@ -234,7 +234,7 @@ func addSubnetValidator(
 		Priority:        txs.SubnetPermissionlessValidatorCurrentPriority,
 	})
 
-	blk, err := block.NewBanffStandardBlock(startTime, ids.GenerateTestID(), height, nil)
+	blk, err := block.NewBanff(startTime, ids.GenerateTestID(), height, nil)
 	if err != nil {
 		return err
 	}
@@ -266,7 +266,7 @@ func addSubnetDelegator(
 		Priority:        txs.SubnetPermissionlessDelegatorCurrentPriority,
 	})
 
-	blk, err := block.NewBanffStandardBlock(startTime, ids.GenerateTestID(), height, nil)
+	blk, err := block.NewBanff(startTime, ids.GenerateTestID(), height, nil)
 	if err != nil {
 		return err
 	}

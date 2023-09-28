@@ -431,7 +431,7 @@ func TestBuildBlock(t *testing.T) {
 				return s
 			},
 			expectedBlkF: func(require *require.Assertions) block.Interface {
-				expectedBlk, err := block.NewBanffStandardBlock(
+				expectedBlk, err := block.NewBanff(
 					parentTimestamp,
 					parentID,
 					height,
@@ -534,7 +534,7 @@ func TestBuildBlock(t *testing.T) {
 				return s
 			},
 			expectedBlkF: func(require *require.Assertions) block.Interface {
-				expectedBlk, err := block.NewBanffStandardBlock(
+				expectedBlk, err := block.NewBanff(
 					now.Add(-1*time.Second), // note the advanced time
 					parentID,
 					height,
@@ -587,7 +587,7 @@ func TestBuildBlock(t *testing.T) {
 				return s
 			},
 			expectedBlkF: func(require *require.Assertions) block.Interface {
-				expectedBlk, err := block.NewBanffStandardBlock(
+				expectedBlk, err := block.NewBanff(
 					parentTimestamp,
 					parentID,
 					height,
@@ -641,7 +641,7 @@ func TestBuildBlock(t *testing.T) {
 				return s
 			},
 			expectedBlkF: func(require *require.Assertions) block.Interface {
-				expectedBlk, err := block.NewBanffStandardBlock(
+				expectedBlk, err := block.NewBanff(
 					parentTimestamp,
 					parentID,
 					height,

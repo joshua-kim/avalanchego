@@ -438,7 +438,7 @@ func terminatePrimaryValidator(vm *VM, validator *state.Staker) error {
 	}
 
 	commit := options[0].(*blockexecutor.Block)
-	_, ok := commit.Interface.(*block.BanffCommitBlock)
+	_, ok := commit.Interface.(*block.BanffCommit)
 	if !ok {
 		return fmt.Errorf("failed retrieving commit option: %w", err)
 	}

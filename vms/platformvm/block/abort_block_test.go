@@ -18,7 +18,7 @@ func TestNewBanffAbortBlock(t *testing.T) {
 	timestamp := time.Now().Truncate(time.Second)
 	parentID := ids.GenerateTestID()
 	height := uint64(1337)
-	blk, err := NewBanffAbortBlock(
+	blk, err := NewBanffAbort(
 		timestamp,
 		parentID,
 		height,
@@ -28,7 +28,7 @@ func TestNewBanffAbortBlock(t *testing.T) {
 	// Make sure the block is initialized
 	require.NotEmpty(blk.Bytes())
 
-	require.Equal(timestamp, blk.Timestamp())
+	require.Equal(timestamp, blk.Time())
 	require.Equal(parentID, blk.Parent())
 	require.Equal(height, blk.Height())
 }
@@ -38,7 +38,7 @@ func TestNewApricotAbortBlock(t *testing.T) {
 
 	parentID := ids.GenerateTestID()
 	height := uint64(1337)
-	blk, err := NewApricotAbortBlock(
+	blk, err := NewApricotAbort(
 		parentID,
 		height,
 	)

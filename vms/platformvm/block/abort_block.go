@@ -12,71 +12,73 @@ import (
 )
 
 var (
-	_ Banff     = (*BanffAbortBlock)(nil)
-	_ Interface = (*ApricotAbortBlock)(nil)
+	_ Interface = (*BanffAbort)(nil)
+	_ Interface = (*ApricotAbort)(nil)
 )
 
-type BanffAbortBlock struct {
-	Time              uint64 `serialize:"true" json:"time"`
-	ApricotAbortBlock `serialize:"true"`
-}
-
-func (b *BanffAbortBlock) Timestamp() time.Time {
-	return time.Unix(int64(b.Time), 0)
-}
-
-func (b *BanffAbortBlock) Visit(v Visitor) error {
-	return v.BanffAbortBlock(b)
-}
-
-func NewBanffAbortBlock(
-	timestamp time.Time,
+func NewBanffAbort(
+	time time.Time,
 	parentID ids.ID,
 	height uint64,
-) (*BanffAbortBlock, error) {
-	blk := &BanffAbortBlock{
-		Time: uint64(timestamp.Unix()),
-		ApricotAbortBlock: ApricotAbortBlock{
-			Block: CommonBlock{
-				PrntID: parentID,
-				Hght:   height,
+) (Banff, error) {
+	blk := Banff{
+		Block: Block{
+			Interface: &BanffAbort{},
+			Data: Data{
+				Parent: parentID,
+				Height: height,
 			},
 		},
+		Time: time,
 	}
-	return blk, initialize(blk)
+
+	return blk, initializeBanff(blk)
 }
 
-type ApricotAbortBlock struct {
-	Block `serialize:"true"`
+type BanffAbort struct{}
+
+func (*BanffAbort) InitCtx(*snow.Context) {
+	return
 }
 
-func (b *ApricotAbortBlock) initialize(bytes []byte) error {
-	b.Block.initialize(bytes)
+func (*BanffAbort) initialize([]byte) error {
 	return nil
 }
 
-func (*ApricotAbortBlock) InitCtx(*snow.Context) {}
-
-func (*ApricotAbortBlock) Txs() []*txs.Tx {
-	return nil
+func (b *BanffAbort) Visit(v Visitor) error {
+	return v.BanffAbort(b)
 }
 
-func (b *ApricotAbortBlock) Visit(v Visitor) error {
-	return v.ApricotAbortBlock(b)
-}
-
-// NewApricotAbortBlock is kept for testing purposes only.
+// NewApricotAbort is kept for testing purposes only.
 // Following Banff activation and subsequent code cleanup, Apricot Abort blocks
 // should be only verified (upon bootstrap), never created anymore
-func NewApricotAbortBlock(
+func NewApricotAbort(
 	parentID ids.ID,
 	height uint64,
-) (*ApricotAbortBlock, error) {
-	blk := &ApricotAbortBlock{
-		Block: CommonBlock{
-			PrntID: parentID,
-			Hght:   height,
+) (Block, error) {
+	blk := Block{
+		Interface: &ApricotAbort{},
+		Data: Data{
+			Parent: parentID,
+			Height: height,
 		},
 	}
+
 	return blk, initialize(blk)
+}
+
+type ApricotAbort struct{}
+
+func (b *ApricotAbort) initialize(bytes []byte) error {
+	return nil
+}
+
+func (*ApricotAbort) InitCtx(*snow.Context) {}
+
+func (*ApricotAbort) Txs() []*txs.Tx {
+	return nil
+}
+
+func (b *ApricotAbort) Visit(v Visitor) error {
+	return v.ApricotAbortBlock(b)
 }

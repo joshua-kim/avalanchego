@@ -83,7 +83,7 @@ func TestNewApricotProposalBlock(t *testing.T) {
 	}
 	require.NoError(tx.Initialize(txs.Codec))
 
-	blk, err := NewApricotProposalBlock(
+	blk, err := NewApricotProposal(
 		parentID,
 		height,
 		tx,

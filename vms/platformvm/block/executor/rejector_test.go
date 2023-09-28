@@ -47,7 +47,7 @@ func TestRejectBlock(t *testing.T) {
 				)
 			},
 			rejectFunc: func(r *rejector, b block.Interface) error {
-				return r.BanffProposalBlock(b.(*block.BanffProposalBlock))
+				return r.BanffProposalBlock(b.(*block.BanffProposal))
 			},
 		},
 		{
@@ -72,7 +72,7 @@ func TestRejectBlock(t *testing.T) {
 		{
 			name: "standard block",
 			newBlockFunc: func() (block.Interface, error) {
-				return block.NewBanffStandardBlock(
+				return block.NewBanff(
 					time.Now(),
 					ids.GenerateTestID(),
 					1,
@@ -88,25 +88,25 @@ func TestRejectBlock(t *testing.T) {
 				)
 			},
 			rejectFunc: func(r *rejector, b block.Interface) error {
-				return r.BanffStandardBlock(b.(*block.BanffStandardBlock))
+				return r.BanffStandardBlock(b.(*block.BanffStandard))
 			},
 		},
 		{
 			name: "commit",
 			newBlockFunc: func() (block.Interface, error) {
-				return block.NewBanffCommitBlock(time.Now(), ids.GenerateTestID() /*parent*/, 1 /*height*/)
+				return block.NewBanffCommit(time.Now(), ids.GenerateTestID() /*parent*/, 1 /*height*/)
 			},
 			rejectFunc: func(r *rejector, blk block.Interface) error {
-				return r.BanffCommitBlock(blk.(*block.BanffCommitBlock))
+				return r.BanffCommitBlock(blk.(*block.BanffCommit))
 			},
 		},
 		{
 			name: "abort",
 			newBlockFunc: func() (block.Interface, error) {
-				return block.NewBanffAbortBlock(time.Now(), ids.GenerateTestID() /*parent*/, 1 /*height*/)
+				return block.NewBanffAbort(time.Now(), ids.GenerateTestID() /*parent*/, 1 /*height*/)
 			},
 			rejectFunc: func(r *rejector, blk block.Interface) error {
-				return r.BanffAbortBlock(blk.(*block.BanffAbortBlock))
+				return r.BanffAbort(blk.(*block.BanffAbort))
 			},
 		},
 	}

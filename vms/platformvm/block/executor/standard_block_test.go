@@ -40,7 +40,7 @@ func TestApricotStandardBlockTimeVerification(t *testing.T) {
 	// it's a standard block for simplicity
 	parentHeight := uint64(2022)
 
-	apricotParentBlk, err := block.NewApricotStandardBlock(
+	apricotParentBlk, err := block.NewApricotStandard(
 		ids.Empty, // does not matter
 		parentHeight,
 		nil, // txs do not matter in this test
@@ -62,7 +62,7 @@ func TestApricotStandardBlockTimeVerification(t *testing.T) {
 	onParentAccept.EXPECT().GetTimestamp().Return(chainTime).AnyTimes()
 
 	// wrong height
-	apricotChildBlk, err := block.NewApricotStandardBlock(
+	apricotChildBlk, err := block.NewApricotStandard(
 		apricotParentBlk.ID(),
 		apricotParentBlk.Height(),
 		nil, // txs nulled to simplify test
@@ -73,7 +73,7 @@ func TestApricotStandardBlockTimeVerification(t *testing.T) {
 	require.ErrorIs(err, errIncorrectBlockHeight)
 
 	// valid height
-	apricotChildBlk, err = block.NewApricotStandardBlock(
+	apricotChildBlk, err = block.NewApricotStandard(
 		apricotParentBlk.ID(),
 		apricotParentBlk.Height()+1,
 		nil, // txs nulled to simplify test
@@ -100,7 +100,7 @@ func TestBanffStandardBlockTimeVerification(t *testing.T) {
 	parentTime := now
 	parentHeight := uint64(2022)
 
-	banffParentBlk, err := block.NewBanffStandardBlock(
+	banffParentBlk, err := block.NewBanff(
 		parentTime,
 		ids.Empty, // does not matter
 		parentHeight,
@@ -178,7 +178,7 @@ func TestBanffStandardBlockTimeVerification(t *testing.T) {
 
 	{
 		// wrong version
-		banffChildBlk, err := block.NewApricotStandardBlock(
+		banffChildBlk, err := block.NewApricotStandard(
 			banffParentBlk.ID(),
 			banffParentBlk.Height()+1,
 			[]*txs.Tx{tx},
@@ -192,7 +192,7 @@ func TestBanffStandardBlockTimeVerification(t *testing.T) {
 	{
 		// wrong height
 		childTimestamp := parentTime.Add(time.Second)
-		banffChildBlk, err := block.NewBanffStandardBlock(
+		banffChildBlk, err := block.NewBanff(
 			childTimestamp,
 			banffParentBlk.ID(),
 			banffParentBlk.Height(),
@@ -207,7 +207,7 @@ func TestBanffStandardBlockTimeVerification(t *testing.T) {
 	{
 		// wrong timestamp, earlier than parent
 		childTimestamp := parentTime.Add(-1 * time.Second)
-		banffChildBlk, err := block.NewBanffStandardBlock(
+		banffChildBlk, err := block.NewBanff(
 			childTimestamp,
 			banffParentBlk.ID(),
 			banffParentBlk.Height()+1,
@@ -223,7 +223,7 @@ func TestBanffStandardBlockTimeVerification(t *testing.T) {
 		// wrong timestamp, violated synchrony bound
 		initClkTime := env.clk.Time()
 		env.clk.Set(parentTime.Add(-executor.SyncBound))
-		banffChildBlk, err := block.NewBanffStandardBlock(
+		banffChildBlk, err := block.NewBanff(
 			parentTime.Add(time.Second),
 			banffParentBlk.ID(),
 			banffParentBlk.Height()+1,
@@ -239,7 +239,7 @@ func TestBanffStandardBlockTimeVerification(t *testing.T) {
 	{
 		// wrong timestamp, skipped staker set change event
 		childTimestamp := nextStakerTime.Add(time.Second)
-		banffChildBlk, err := block.NewBanffStandardBlock(
+		banffChildBlk, err := block.NewBanff(
 			childTimestamp,
 			banffParentBlk.ID(),
 			banffParentBlk.Height()+1,
@@ -254,7 +254,7 @@ func TestBanffStandardBlockTimeVerification(t *testing.T) {
 	{
 		// no state changes
 		childTimestamp := parentTime
-		banffChildBlk, err := block.NewBanffStandardBlock(
+		banffChildBlk, err := block.NewBanff(
 			childTimestamp,
 			banffParentBlk.ID(),
 			banffParentBlk.Height()+1,
@@ -269,7 +269,7 @@ func TestBanffStandardBlockTimeVerification(t *testing.T) {
 	{
 		// valid block, same timestamp as parent block
 		childTimestamp := parentTime
-		banffChildBlk, err := block.NewBanffStandardBlock(
+		banffChildBlk, err := block.NewBanff(
 			childTimestamp,
 			banffParentBlk.ID(),
 			banffParentBlk.Height()+1,
@@ -283,7 +283,7 @@ func TestBanffStandardBlockTimeVerification(t *testing.T) {
 	{
 		// valid
 		childTimestamp := nextStakerTime
-		banffChildBlk, err := block.NewBanffStandardBlock(
+		banffChildBlk, err := block.NewBanff(
 			childTimestamp,
 			banffParentBlk.ID(),
 			banffParentBlk.Height()+1,
@@ -304,7 +304,7 @@ func TestBanffStandardBlockUpdatePrimaryNetworkStakers(t *testing.T) {
 	}()
 	env.config.BanffTime = time.Time{} // activate Banff
 
-	// Case: Timestamp is after next validator start time
+	// Case: Time is after next validator start time
 	// Add a pending validator
 	pendingValidatorStartTime := defaultGenesisTime.Add(1 * time.Second)
 	pendingValidatorEndTime := pendingValidatorStartTime.Add(defaultMinStakingDuration)
@@ -324,7 +324,7 @@ func TestBanffStandardBlockUpdatePrimaryNetworkStakers(t *testing.T) {
 	preferredID := env.state.GetLastAccepted()
 	parentBlk, err := env.state.GetStatelessBlock(preferredID)
 	require.NoError(err)
-	statelessStandardBlock, err := block.NewBanffStandardBlock(
+	statelessStandardBlock, err := block.NewBanff(
 		pendingValidatorStartTime,
 		parentBlk.ID(),
 		parentBlk.Height()+1,
@@ -543,7 +543,7 @@ func TestBanffStandardBlockUpdateStakers(t *testing.T) {
 				preferredID := env.state.GetLastAccepted()
 				parentBlk, err := env.state.GetStatelessBlock(preferredID)
 				require.NoError(err)
-				statelessStandardBlock, err := block.NewBanffStandardBlock(
+				statelessStandardBlock, err := block.NewBanff(
 					newTime,
 					parentBlk.ID(),
 					parentBlk.Height()+1,
@@ -659,7 +659,7 @@ func TestBanffStandardBlockRemoveSubnetValidator(t *testing.T) {
 	preferredID := env.state.GetLastAccepted()
 	parentBlk, err := env.state.GetStatelessBlock(preferredID)
 	require.NoError(err)
-	statelessStandardBlock, err := block.NewBanffStandardBlock(
+	statelessStandardBlock, err := block.NewBanff(
 		subnetVdr1EndTime,
 		parentBlk.ID(),
 		parentBlk.Height()+1,
@@ -731,7 +731,7 @@ func TestBanffStandardBlockTrackedSubnet(t *testing.T) {
 			preferredID := env.state.GetLastAccepted()
 			parentBlk, err := env.state.GetStatelessBlock(preferredID)
 			require.NoError(err)
-			statelessStandardBlock, err := block.NewBanffStandardBlock(
+			statelessStandardBlock, err := block.NewBanff(
 				subnetVdr1StartTime,
 				parentBlk.ID(),
 				parentBlk.Height()+1,
@@ -756,7 +756,7 @@ func TestBanffStandardBlockDelegatorStakerWeight(t *testing.T) {
 	}()
 	env.config.BanffTime = time.Time{} // activate Banff
 
-	// Case: Timestamp is after next validator start time
+	// Case: Time is after next validator start time
 	// Add a pending validator
 	pendingValidatorStartTime := defaultGenesisTime.Add(1 * time.Second)
 	pendingValidatorEndTime := pendingValidatorStartTime.Add(defaultMaxStakingDuration)
@@ -776,7 +776,7 @@ func TestBanffStandardBlockDelegatorStakerWeight(t *testing.T) {
 	preferredID := env.state.GetLastAccepted()
 	parentBlk, err := env.state.GetStatelessBlock(preferredID)
 	require.NoError(err)
-	statelessStandardBlock, err := block.NewBanffStandardBlock(
+	statelessStandardBlock, err := block.NewBanff(
 		pendingValidatorStartTime,
 		parentBlk.ID(),
 		parentBlk.Height()+1,
@@ -828,7 +828,7 @@ func TestBanffStandardBlockDelegatorStakerWeight(t *testing.T) {
 	preferredID = env.state.GetLastAccepted()
 	parentBlk, err = env.state.GetStatelessBlock(preferredID)
 	require.NoError(err)
-	statelessStandardBlock, err = block.NewBanffStandardBlock(
+	statelessStandardBlock, err = block.NewBanff(
 		pendingDelegatorStartTime,
 		parentBlk.ID(),
 		parentBlk.Height()+1,

@@ -41,7 +41,7 @@ func TestApricotProposalBlockTimeVerification(t *testing.T) {
 	// create apricotParentBlk. It's a standard one for simplicity
 	parentHeight := uint64(2022)
 
-	apricotParentBlk, err := block.NewApricotStandardBlock(
+	apricotParentBlk, err := block.NewApricotStandard(
 		ids.Empty, // does not matter
 		parentHeight,
 		nil, // txs do not matter in this test
@@ -119,7 +119,7 @@ func TestApricotProposalBlockTimeVerification(t *testing.T) {
 	).AnyTimes()
 
 	// wrong height
-	statelessProposalBlock, err := block.NewApricotProposalBlock(
+	statelessProposalBlock, err := block.NewApricotProposal(
 		parentID,
 		parentHeight,
 		blkTx,
@@ -132,7 +132,7 @@ func TestApricotProposalBlockTimeVerification(t *testing.T) {
 	require.ErrorIs(err, errIncorrectBlockHeight)
 
 	// valid
-	statelessProposalBlock, err = block.NewApricotProposalBlock(
+	statelessProposalBlock, err = block.NewApricotProposal(
 		parentID,
 		parentHeight+1,
 		blkTx,
@@ -158,7 +158,7 @@ func TestBanffProposalBlockTimeVerification(t *testing.T) {
 	parentTime := defaultGenesisTime
 	parentHeight := uint64(2022)
 
-	banffParentBlk, err := block.NewApricotStandardBlock(
+	banffParentBlk, err := block.NewApricotStandard(
 		genesisBlkID, // does not matter
 		parentHeight,
 		nil, // txs do not matter in this test
@@ -269,7 +269,7 @@ func TestBanffProposalBlockTimeVerification(t *testing.T) {
 
 	{
 		// wrong block version
-		statelessProposalBlock, err := block.NewApricotProposalBlock(
+		statelessProposalBlock, err := block.NewApricotProposal(
 			parentID,
 			banffParentBlk.Height()+1,
 			blkTx,
@@ -957,7 +957,7 @@ func TestBanffProposalBlockDelegatorStakerWeight(t *testing.T) {
 	}()
 	env.config.BanffTime = time.Time{} // activate Banff
 
-	// Case: Timestamp is after next validator start time
+	// Case: Time is after next validator start time
 	// Add a pending validator
 	pendingValidatorStartTime := defaultGenesisTime.Add(1 * time.Second)
 	pendingValidatorEndTime := pendingValidatorStartTime.Add(defaultMaxStakingDuration)
@@ -1138,7 +1138,7 @@ func TestBanffProposalBlockDelegatorStakers(t *testing.T) {
 	}()
 	env.config.BanffTime = time.Time{} // activate Banff
 
-	// Case: Timestamp is after next validator start time
+	// Case: Time is after next validator start time
 	// Add a pending validator
 	pendingValidatorStartTime := defaultGenesisTime.Add(1 * time.Second)
 	pendingValidatorEndTime := pendingValidatorStartTime.Add(defaultMinStakingDuration)

@@ -41,7 +41,7 @@ func TestNewBanffStandardBlock(t *testing.T) {
 	}
 	require.NoError(tx.Initialize(txs.Codec))
 
-	blk, err := NewBanffStandardBlock(
+	blk, err := NewBanff(
 		timestamp,
 		parentID,
 		height,
@@ -83,7 +83,7 @@ func TestNewApricotStandardBlock(t *testing.T) {
 	}
 	require.NoError(tx.Initialize(txs.Codec))
 
-	blk, err := NewApricotStandardBlock(
+	blk, err := NewApricotStandard(
 		parentID,
 		height,
 		[]*txs.Tx{tx},

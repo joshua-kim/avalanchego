@@ -15,62 +15,44 @@ var (
 	_ Interface = (*ApricotCommit)(nil)
 )
 
-type BanffCommit struct{}
+func NewBanffCommit(timestamp time.Time, parentID ids.ID, height uint64) (*BanffCommit, error) {
+	blk := &BanffCommit{
+		banffData: banffData{
+			Time: timestamp,
+		},
+	}
 
-func (BanffCommit) initialize([]byte) error {
-	return nil
+	data, err := newData(blk, parentID, height)
+	blk.data = data
+	return blk, err
 }
 
-func (BanffCommit) InitCtx(*snow.Context) {
+type BanffCommit struct {
+	banffData
+}
+
+func (*BanffCommit) InitCtx(*snow.Context) {
 	return
 }
 
-func (b BanffCommit) Visit(v Visitor) error {
+func (b *BanffCommit) Visit(v Visitor) error {
 	return v.BanffCommitBlock(b)
 }
 
-func NewBanffCommit(
-	timestamp time.Time,
-	parentID ids.ID,
-	height uint64,
-) (Banff, error) {
-	blk := Banff{
-		Block: Block{
-			Interface: &BanffCommit{},
-			Data: Data{
-				Parent: parentID,
-				Height: height,
-			},
-		},
-		Time: timestamp,
-	}
+func NewApricotCommitBlock(parentID ids.ID, height uint64) (*ApricotCommit, error) {
+	blk := &ApricotCommit{}
 
-	return blk, blk.initialize(blk.Bytes)
+	data, err := newData(blk, parentID, height)
+	blk.data = data
+	return blk, err
 }
 
-type ApricotCommit struct{}
-
-func (ApricotCommit) initialize([]byte) error {
-	return nil
+type ApricotCommit struct {
+	data
 }
 
-func (ApricotCommit) InitCtx(*snow.Context) {}
+func (*ApricotCommit) InitCtx(*snow.Context) {}
 
-func (b ApricotCommit) Visit(v Visitor) error {
+func (b *ApricotCommit) Visit(v Visitor) error {
 	return v.ApricotCommitBlock(b)
-}
-
-func NewApricotCommitBlock(
-	parentID ids.ID,
-	height uint64,
-) (Block, error) {
-	blk := Block{
-		Interface: &ApricotCommit{},
-		Data: Data{
-			Parent: parentID,
-			Height: height,
-		},
-	}
-
-	return blk, blk.initialize(blk.Bytes)
 }

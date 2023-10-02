@@ -6,7 +6,6 @@ package executor
 import (
 	"errors"
 	"fmt"
-
 	"go.uber.org/zap"
 
 	"github.com/ava-labs/avalanchego/utils"
@@ -32,42 +31,42 @@ type acceptor struct {
 	bootstrapped *utils.Atomic[bool]
 }
 
-func (a *acceptor) BanffAbort(b block.Data) error {
+func (a *acceptor) BanffAbort(b *block.BanffAbort) error {
 	return a.abortBlock(b, "banff abort")
 }
 
-func (a *acceptor) BanffCommitBlock(b block.Data) error {
+func (a *acceptor) BanffCommitBlock(b *block.BanffCommit) error {
 	return a.commitBlock(b, "apricot commit")
 }
 
-func (a *acceptor) BanffProposalBlock(b block.Data) error {
-	a.proposalBlock(b, "banff proposal")
+func (a *acceptor) BanffProposalBlock(b *block.BanffProposal) error {
+	a.proposalBlock(b.data, "banff proposal")
 	return nil
 }
 
-func (a *acceptor) BanffStandardBlock(b block.Data) error {
+func (a *acceptor) BanffStandardBlock(b *block.BanffStandard) error {
 	return a.standardBlock(b, "banff standard")
 }
 
-func (a *acceptor) ApricotAbortBlock(b block.Data) error {
+func (a *acceptor) ApricotAbortBlock(b *block.ApricotAbort) error {
 	return a.abortBlock(b, "apricot abort")
 }
 
-func (a *acceptor) ApricotCommitBlock(b block.Data) error {
+func (a *acceptor) ApricotCommitBlock(b *block.ApricotCommit) error {
 	return a.commitBlock(b, "apricot commit")
 }
 
-func (a *acceptor) ApricotProposalBlock(b block.Data) error {
-	a.proposalBlock(b, "apricot proposal")
+func (a *acceptor) ApricotProposalBlock(b *block.ApricotProposal) error {
+	a.proposalBlock(b.data, "apricot proposal")
 	return nil
 }
 
-func (a *acceptor) ApricotStandardBlock(b block.Data) error {
+func (a *acceptor) ApricotStandardBlock(b *block.ApricotStandard) error {
 	return a.standardBlock(b, "apricot standard")
 }
 
-func (a *acceptor) ApricotAtomicBlock(b block.Data) error {
-	blkID := b.ID
+func (a *acceptor) ApricotAtomicBlock(b *block.ApricotAtomic) error {
+	blkID := b.ID()
 	defer a.free(blkID)
 
 	if err := a.commonAccept(b); err != nil {
@@ -108,16 +107,16 @@ func (a *acceptor) ApricotAtomicBlock(b block.Data) error {
 		"accepted block",
 		zap.String("blockType", "apricot atomic"),
 		zap.Stringer("blkID", blkID),
-		zap.Uint64("height", b.Height),
-		zap.Stringer("parentID", b.Parent),
+		zap.Uint64("height", b.Height()),
+		zap.Stringer("parentID", b.ParentID()),
 		zap.Stringer("utxoChecksum", a.state.Checksum()),
 	)
 
 	return nil
 }
 
-func (a *acceptor) abortBlock(b block.Data, blockType string) error {
-	parentID := b.Parent
+func (a *acceptor) abortBlock(b block.Interface, blockType string) error {
+	parentID := b.ParentID()
 	parentState, ok := a.blkIDToState[parentID]
 	if !ok {
 		return fmt.Errorf("%w: %s", state.ErrMissingParentState, parentID)
@@ -131,11 +130,11 @@ func (a *acceptor) abortBlock(b block.Data, blockType string) error {
 		}
 	}
 
-	return a.optionBlock(b, parentState.blockData, blockType)
+	return a.optionBlock(b, parentState.block, blockType)
 }
 
-func (a *acceptor) commitBlock(b block.Data, blockType string) error {
-	parentID := b.Parent
+func (a *acceptor) commitBlock(b block.Interface, blockType string) error {
+	parentID := b.ParentID()
 	parentState, ok := a.blkIDToState[parentID]
 	if !ok {
 		return fmt.Errorf("%w: %s", state.ErrMissingParentState, parentID)
@@ -149,12 +148,12 @@ func (a *acceptor) commitBlock(b block.Data, blockType string) error {
 		}
 	}
 
-	return a.optionBlock(b, parentState.blockData, blockType)
+	return a.optionBlock(b, parentState.block, blockType)
 }
 
-func (a *acceptor) optionBlock(b, parent block.Data, blockType string) error {
-	blkID := b.ID
-	parentID := parent.ID
+func (a *acceptor) optionBlock(b, parent block.Interface, blockType string) error {
+	blkID := b.ID()
+	parentID := parent.ID()
 
 	defer func() {
 		// Note: we assume this block's sibling doesn't
@@ -188,7 +187,7 @@ func (a *acceptor) optionBlock(b, parent block.Data, blockType string) error {
 		"accepted block",
 		zap.String("blockType", blockType),
 		zap.Stringer("blkID", blkID),
-		zap.Uint64("height", b.Height),
+		zap.Uint64("height", b.Height()),
 		zap.Stringer("parentID", parentID),
 		zap.Stringer("utxoChecksum", a.state.Checksum()),
 	)
@@ -196,7 +195,7 @@ func (a *acceptor) optionBlock(b, parent block.Data, blockType string) error {
 	return nil
 }
 
-func (a *acceptor) proposalBlock(b block.Data, blockType string) {
+func (a *acceptor) proposalBlock(b block.data, blockType string) {
 	// Note that:
 	//
 	// * We don't free the proposal block in this method.
@@ -220,14 +219,14 @@ func (a *acceptor) proposalBlock(b block.Data, blockType string) {
 		"accepted block",
 		zap.String("blockType", blockType),
 		zap.Stringer("blkID", blkID),
-		zap.Uint64("height", b.Height),
-		zap.Stringer("parentID", b.Parent)),
+		zap.Uint64("height", b.Height()),
+		zap.Stringer("parentID", b.ParentID()),
 		zap.Stringer("utxoChecksum", a.state.Checksum()),
 	)
 }
 
-func (a *acceptor) standardBlock(b block.Data, blockType string) error {
-	blkID := b.ID
+func (a *acceptor) standardBlock(b block.Interface, blockType string) error {
+	blkID := b.ID()
 	defer a.free(blkID)
 
 	if err := a.commonAccept(b); err != nil {
@@ -267,16 +266,16 @@ func (a *acceptor) standardBlock(b block.Data, blockType string) error {
 		"accepted block",
 		zap.String("blockType", blockType),
 		zap.Stringer("blkID", blkID),
-		zap.Uint64("height", b.Height),
-		zap.Stringer("parentID", b.Parent),
+		zap.Uint64("height", b.Height()),
+		zap.Stringer("parentID", b.ParentID()),
 		zap.Stringer("utxoChecksum", a.state.Checksum()),
 	)
 
 	return nil
 }
 
-func (a *acceptor) commonAccept(b block.Data) error {
-	blkID := b.ID
+func (a *acceptor) commonAccept(b block.Interface) error {
+	blkID := b.ID()
 
 	if err := a.metrics.MarkAccepted(b); err != nil {
 		return fmt.Errorf("failed to accept block %s: %w", blkID, err)
@@ -284,7 +283,8 @@ func (a *acceptor) commonAccept(b block.Data) error {
 
 	a.backend.lastAccepted = blkID
 	a.state.SetLastAccepted(blkID)
-	a.state.SetHeight(b.Height)
+	a.state.SetHeight(b.Height())
+
 	a.state.AddStatelessBlock(b)
 	a.validators.OnAcceptedBlockID(blkID)
 	return nil

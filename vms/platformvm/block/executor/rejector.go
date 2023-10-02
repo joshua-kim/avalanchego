@@ -19,52 +19,52 @@ type rejector struct {
 	addTxsToMempool bool
 }
 
-func (r *rejector) BanffAbort(b *block.BanffAbort) error {
-	return r.rejectBlock(b, "banff abort")
+func (r *rejector) BanffAbort(b block.Banff) error {
+	return r.rejectBlock(b.Data, "banff abort")
 }
 
-func (r *rejector) BanffCommitBlock(b *block.BanffCommit) error {
-	return r.rejectBlock(b, "banff commit")
+func (r *rejector) BanffCommitBlock(b block.Banff) error {
+	return r.rejectBlock(b.Data, "banff commit")
 }
 
-func (r *rejector) BanffProposalBlock(b *block.BanffProposal) error {
-	return r.rejectBlock(b, "banff proposal")
+func (r *rejector) BanffProposalBlock(b block.Banff) error {
+	return r.rejectBlock(b.Data, "banff proposal")
 }
 
-func (r *rejector) BanffStandardBlock(b *block.BanffStandard) error {
-	return r.rejectBlock(b, "banff standard")
+func (r *rejector) BanffStandardBlock(b block.Banff) error {
+	return r.rejectBlock(b.Data, "banff standard")
 }
 
-func (r *rejector) ApricotAbortBlock(b *block.ApricotAbort) error {
+func (r *rejector) ApricotAbortBlock(b block.data) error {
 	return r.rejectBlock(b, "apricot abort")
 }
 
-func (r *rejector) ApricotCommitBlock(b *block.ApricotCommit) error {
+func (r *rejector) ApricotCommitBlock(b block.data) error {
 	return r.rejectBlock(b, "apricot commit")
 }
 
-func (r *rejector) ApricotProposalBlock(b *block.ApricotProposal) error {
+func (r *rejector) ApricotProposalBlock(b block.data) error {
 	return r.rejectBlock(b, "apricot proposal")
 }
 
-func (r *rejector) ApricotStandardBlock(b *block.ApricotStandard) error {
+func (r *rejector) ApricotStandardBlock(b block.data) error {
 	return r.rejectBlock(b, "apricot standard")
 }
 
-func (r *rejector) ApricotAtomicBlock(b *block.ApricotAtomic) error {
+func (r *rejector) ApricotAtomicBlock(b block.data) error {
 	return r.rejectBlock(b, "apricot atomic")
 }
 
-func (r *rejector) rejectBlock(b block.Interface, blockType string) error {
-	blkID := b.ID()
+func (r *rejector) rejectBlock(b block.data, blockType string) error {
+	blkID := b.ID
 	defer r.free(blkID)
 
 	r.ctx.Log.Verbo(
 		"rejecting block",
 		zap.String("blockType", blockType),
 		zap.Stringer("blkID", blkID),
-		zap.Uint64("height", b.Height()),
-		zap.Stringer("parentID", b.Parent()),
+		zap.Uint64("height", b.Height),
+		zap.Stringer("parentID", b.ParentID),
 	)
 
 	if !r.addTxsToMempool {

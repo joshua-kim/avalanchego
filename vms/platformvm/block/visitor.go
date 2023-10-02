@@ -4,14 +4,14 @@
 package block
 
 type Visitor interface {
-	BanffAbort(Data) error
-	BanffCommitBlock(Data) error
-	BanffProposalBlock(BanffProposal) error
-	BanffStandardBlock(BanffStandard) error
+	BanffAbort(*BanffAbort) error
+	BanffCommitBlock(*BanffCommit) error
+	BanffProposalBlock(*BanffProposal) error
+	BanffStandardBlock(*BanffStandard) error
 
-	ApricotAbortBlock(Data) error
-	ApricotCommitBlock(Data) error
-	ApricotProposalBlock(Data) error
-	ApricotStandardBlock(ApricotStandard) error
-	ApricotAtomicBlock(ApricotAtomic) error
+	ApricotAbortBlock(*ApricotAbort) error
+	ApricotCommitBlock(*ApricotCommit) error
+	ApricotProposalBlock(*ApricotProposal) error
+	ApricotStandardBlock(*ApricotStandard) error
+	ApricotAtomicBlock(*ApricotAtomic) error
 }

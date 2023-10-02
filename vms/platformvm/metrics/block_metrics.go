@@ -56,29 +56,29 @@ func newBlockMetric(
 	return blockMetric
 }
 
-func (m *blockMetrics) BanffAbort(block.Data) error {
+func (m *blockMetrics) BanffAbort(*block.BanffAbort) error {
 	m.numAbortBlocks.Inc()
 	return nil
 }
 
-func (m *blockMetrics) BanffCommitBlock(block.Data) error {
+func (m *blockMetrics) BanffCommitBlock(*block.BanffCommit) error {
 	m.numCommitBlocks.Inc()
 	return nil
 }
 
-func (m *blockMetrics) BanffProposalBlock(b block.BanffProposal) error {
+func (m *blockMetrics) BanffProposalBlock(b *block.BanffProposal) error {
 	m.numProposalBlocks.Inc()
-	for _, tx := range b.Transactions {
+	for _, tx := range b.Txs {
 		if err := tx.Unsigned.Visit(m.txMetrics); err != nil {
 			return err
 		}
 	}
-	return b.Tx.Unsigned.Visit(m.txMetrics)
+	return b.Txs.Unsigned.Visit(m.txMetrics)
 }
 
-func (m *blockMetrics) BanffStandardBlock(b block.BanffStandard) error {
+func (m *blockMetrics) BanffStandardBlock(b *block.BanffStandard) error {
 	m.numStandardBlocks.Inc()
-	for _, tx := range b.Transactions {
+	for _, tx := range b.Txs {
 		if err := tx.Unsigned.Visit(m.txMetrics); err != nil {
 			return err
 		}
@@ -86,24 +86,24 @@ func (m *blockMetrics) BanffStandardBlock(b block.BanffStandard) error {
 	return nil
 }
 
-func (m *blockMetrics) ApricotAbortBlock(block.Data) error {
+func (m *blockMetrics) ApricotAbortBlock(*block.ApricotAbort) error {
 	m.numAbortBlocks.Inc()
 	return nil
 }
 
-func (m *blockMetrics) ApricotCommitBlock(block.Data) error {
+func (m *blockMetrics) ApricotCommitBlock(*block.ApricotCommit) error {
 	m.numCommitBlocks.Inc()
 	return nil
 }
 
-func (m *blockMetrics) ApricotProposalBlock(block.Data) error {
+func (m *blockMetrics) ApricotProposalBlock(b *block.ApricotProposal) error {
 	m.numProposalBlocks.Inc()
-	return b.Tx.Unsigned.Visit(m.txMetrics)
+	return b.Txs.Unsigned.Visit(m.txMetrics)
 }
 
-func (m *blockMetrics) ApricotStandardBlock(b block.ApricotStandard) error {
+func (m *blockMetrics) ApricotStandardBlock(b *block.ApricotStandard) error {
 	m.numStandardBlocks.Inc()
-	for _, tx := range b.Transactions {
+	for _, tx := range b.Txs {
 		if err := tx.Unsigned.Visit(m.txMetrics); err != nil {
 			return err
 		}
@@ -111,7 +111,7 @@ func (m *blockMetrics) ApricotStandardBlock(b block.ApricotStandard) error {
 	return nil
 }
 
-func (m *blockMetrics) ApricotAtomicBlock(b block.ApricotAtomic) error {
+func (m *blockMetrics) ApricotAtomicBlock(b *block.ApricotAtomic) error {
 	m.numAtomicBlocks.Inc()
 	return b.Tx.Unsigned.Visit(m.txMetrics)
 }

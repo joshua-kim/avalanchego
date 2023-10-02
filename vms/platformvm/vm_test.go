@@ -518,7 +518,7 @@ func TestInvalidAddValidatorCommit(t *testing.T) {
 
 	preferredID := preferred.ID()
 	preferredHeight := preferred.Height()
-	statelessBlk, err := block.NewBanff(
+	statelessBlk, err := block.NewBanffStandard(
 		preferred.Timestamp(),
 		preferredID,
 		preferredHeight+1,
@@ -1386,7 +1386,7 @@ func TestRestartFullyAccepted(t *testing.T) {
 	}}
 	require.NoError(tx.Initialize(txs.Codec))
 
-	statelessBlk, err := block.NewBanff(
+	statelessBlk, err := block.NewBanffStandard(
 		nextChainTime,
 		preferredID,
 		preferredHeight+1,
@@ -1525,7 +1525,7 @@ func TestBootstrapPartiallyAccepted(t *testing.T) {
 	nextChainTime := initialClkTime.Add(time.Second)
 	preferredID := preferred.ID()
 	preferredHeight := preferred.Height()
-	statelessBlk, err := block.NewBanff(
+	statelessBlk, err := block.NewBanffStandard(
 		nextChainTime,
 		preferredID,
 		preferredHeight+1,
@@ -1839,7 +1839,7 @@ func TestUnverifiedParent(t *testing.T) {
 	preferredID := preferred.ID()
 	preferredHeight := preferred.Height()
 
-	statelessBlk, err := block.NewBanff(
+	statelessBlk, err := block.NewBanffStandard(
 		nextChainTime,
 		preferredID,
 		preferredHeight+1,
@@ -1870,7 +1870,7 @@ func TestUnverifiedParent(t *testing.T) {
 	require.NoError(tx1.Initialize(txs.Codec))
 	nextChainTime = nextChainTime.Add(time.Second)
 	vm.clock.Set(nextChainTime)
-	statelessSecondAdvanceTimeBlk, err := block.NewBanff(
+	statelessSecondAdvanceTimeBlk, err := block.NewBanffStandard(
 		nextChainTime,
 		firstAdvanceTimeBlk.ID(),
 		firstAdvanceTimeBlk.Height()+1,
@@ -2289,7 +2289,7 @@ func TestRemovePermissionedValidatorDuringAddPending(t *testing.T) {
 	)
 	require.NoError(err)
 
-	statelessBlock, err := block.NewBanff(
+	statelessBlock, err := block.NewBanffStandard(
 		vm.state.GetTimestamp(),
 		createSubnetBlock.ID(),
 		createSubnetBlock.Height()+1,

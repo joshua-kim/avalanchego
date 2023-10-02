@@ -12,86 +12,100 @@ import (
 )
 
 var (
-	_ Interface = (*BanffProposal)(nil)
-	_ Interface = (*ApricotProposal)(nil)
+	_ Txs = (*BanffProposal)(nil)
+	_ Txs = (*ApricotProposal)(nil)
 )
 
-type BanffProposal struct {
+type proposalFields struct {
 	Tx *txs.Tx `serialize:"true" json:"tx"`
-	// Transactions is currently unused. This is populated so that introducing
+}
+
+type proposal struct {
+	proposalFields
+}
+
+func (p proposal) Txs() []*txs.Tx {
+	return []*txs.Tx{p.proposalFields.Tx}
+}
+
+func (p proposal) InitCtx(ctx *snow.Context) {
+	p.proposalFields.Tx.Unsigned.InitCtx(ctx)
+}
+
+type BanffProposal struct {
+	banffData
+	proposal
+	// Txs is currently unused. This is populated so that introducing
 	// them in the future will not require a codec change.
 	//
-	// TODO: when Transactions is used, we must correctly verify and apply their
+	// TODO: when Txs is used, we must correctly verify and apply their
 	//       changes.
-	Transactions []*txs.Tx `serialize:"true" json:"-"`
+	Txs []*txs.Tx `serialize:"true" json:"-"`
 }
 
-func (b BanffProposal) initialize(bytes []byte) error {
-	return nil
-}
-
-func (b BanffProposal) InitCtx(ctx *snow.Context) {
-	for _, tx := range b.Transactions {
+func (b *BanffProposal) InitCtx(ctx *snow.Context) {
+	for _, tx := range b.Txs {
 		tx.Unsigned.InitCtx(ctx)
 	}
-	b.Tx.Unsigned.InitCtx(ctx)
+
+	b.proposal.InitCtx(ctx)
 }
 
-func (b BanffProposal) Visit(v Visitor) error {
+func (b *BanffProposal) Visit(v Visitor) error {
 	return v.BanffProposalBlock(b)
 }
 
-func NewBanffProposalBlock(timestamp time.Time, parentID ids.ID, height uint64, tx *txs.Tx) (Banff, error) {
-	blk := Banff{
-		Block: Block{
-			Interface: &BanffProposal{
+func NewBanffProposalBlock(time time.Time, parentID ids.ID, height uint64, tx *txs.Tx) (*BanffProposal, error) {
+	blk := &BanffProposal{
+		banffData: banffData{
+			Time: time,
+		},
+		proposal: proposal{
+			proposalFields: proposalFields{
 				Tx: tx,
 			},
-			Data: Data{
-				ID:     ids.ID{},
-				Parent: parentID,
-				Height: height,
-			},
 		},
-		Time: timestamp,
 	}
 
-	return blk, blk.initialize(blk.Bytes)
+	data, err := newData(blk, parentID, height)
+	blk.data = data
+
+	return blk, err
 }
 
-type ApricotProposal struct {
-	Tx *txs.Tx `serialize:"true" json:"tx"`
-}
-
-func (b *ApricotProposal) initialize([]byte) error {
-	return b.Tx.Initialize(txs.Codec)
-}
-
-func (b *ApricotProposal) InitCtx(ctx *snow.Context) {
-	b.Tx.Unsigned.InitCtx(ctx)
-}
-
-func (b *ApricotProposal) Visit(v Visitor) error {
-	return v.ApricotProposalBlock(b)
-}
-
-// NewApricotProposal is kept for testing purposes only.
-// Following Banff activation and subsequent code cleanup, Apricot Proposal blocks
-// should be only verified (upon bootstrap), never created anymore
 func NewApricotProposal(
 	parentID ids.ID,
 	height uint64,
 	tx *txs.Tx,
-) (Block, error) {
-	blk := Block{
-		Interface: &ApricotProposal{
-			Tx: tx,
+) (*ApricotProposal, error) {
+	blk := &ApricotProposal{
+		data: data{
+			dataFields: dataFields{
+				ParentID: parentID,
+				Height:   height,
+			},
 		},
-		Data: Data{
-			Parent: parentID,
-			Height: height,
+		proposal: proposal{
+			proposalFields: proposalFields{
+				Tx: tx,
+			},
 		},
 	}
 
-	return blk, blk.initialize(blk.Bytes)
+	if err := blk.Tx.Initialize(txs.Codec); err != nil {
+		return nil, err
+	}
+
+	data, err := newData(blk, parentID, height)
+	blk.data = data
+	return blk, err
+}
+
+type ApricotProposal struct {
+	data
+	proposal
+}
+
+func (b *ApricotProposal) Visit(v Visitor) error {
+	return v.ApricotProposalBlock(b)
 }

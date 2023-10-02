@@ -72,7 +72,7 @@ func TestRejectBlock(t *testing.T) {
 		{
 			name: "standard block",
 			newBlockFunc: func() (block.Interface, error) {
-				return block.NewBanff(
+				return block.NewBanffStandard(
 					time.Now(),
 					ids.GenerateTestID(),
 					1,

@@ -377,7 +377,7 @@ func buildBlock(
 	}
 
 	// Issue a block with as many transactions as possible.
-	return block.NewBanff(
+	return block.NewBanffStandard(
 		timestamp,
 		parentID,
 		height,

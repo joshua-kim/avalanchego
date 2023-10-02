@@ -36,7 +36,7 @@ type verifier struct {
 	txExecutorBackend *executor.Backend
 }
 
-func (v *verifier) BanffAbort(b block.Data) error {
+func (v *verifier) BanffAbort(b *block.BanffAbort) error {
 	if err := v.banffOptionBlock(b); err != nil {
 		return err
 	}
@@ -51,7 +51,7 @@ func (v *verifier) BanffCommitBlock(b *block.BanffCommit) error {
 }
 
 func (v *verifier) BanffProposalBlock(b *block.BanffProposal) error {
-	if len(b.Transactions) != 0 {
+	if len(b.Txs) != 0 {
 		return errBanffProposalBlockWithMultipleTransactions
 	}
 
@@ -59,7 +59,7 @@ func (v *verifier) BanffProposalBlock(b *block.BanffProposal) error {
 		return err
 	}
 
-	parentID := b.Parent()
+	parentID := b.ParentID()
 	onCommitState, err := state.NewDiff(parentID, v.backend)
 	if err != nil {
 		return err
@@ -70,7 +70,7 @@ func (v *verifier) BanffProposalBlock(b *block.BanffProposal) error {
 	}
 
 	// Apply the changes, if any, from advancing the chain time.
-	nextChainTime := b.Timestamp()
+	nextChainTime := b.Time
 	changes, err := executor.AdvanceTimeTo(
 		v.txExecutorBackend,
 		onCommitState,
@@ -86,7 +86,7 @@ func (v *verifier) BanffProposalBlock(b *block.BanffProposal) error {
 	onAbortState.SetTimestamp(nextChainTime)
 	changes.Apply(onAbortState)
 
-	return v.proposalBlock(&b.ApricotProposal, onCommitState, onAbortState)
+	return v.proposalBlock(b, onCommitState, onAbortState)
 }
 
 func (v *verifier) BanffStandardBlock(b *block.BanffStandard) error {
@@ -94,14 +94,14 @@ func (v *verifier) BanffStandardBlock(b *block.BanffStandard) error {
 		return err
 	}
 
-	parentID := b.Parent()
+	parentID := b.ParentID()
 	onAcceptState, err := state.NewDiff(parentID, v.backend)
 	if err != nil {
 		return err
 	}
 
 	// Apply the changes, if any, from advancing the chain time.
-	nextChainTime := b.Timestamp()
+	nextChainTime := b.Time
 	changes, err := executor.AdvanceTimeTo(
 		v.txExecutorBackend,
 		onAcceptState,
@@ -113,14 +113,14 @@ func (v *verifier) BanffStandardBlock(b *block.BanffStandard) error {
 
 	// If this block doesn't perform any changes, then it should never have been
 	// issued.
-	if changes.Len() == 0 && len(b.Transactions) == 0 {
+	if changes.Len() == 0 && len(b.Txs()) == 0 {
 		return errBanffStandardBlockWithoutChanges
 	}
 
 	onAcceptState.SetTimestamp(nextChainTime)
 	changes.Apply(onAcceptState)
 
-	return v.standardBlock(&b.ApricotStandardBlock, onAcceptState)
+	return v.standardBlock(b, onAcceptState)
 }
 
 func (v *verifier) ApricotAbortBlock(b *block.ApricotAbort) error {
@@ -142,7 +142,7 @@ func (v *verifier) ApricotProposalBlock(b *block.ApricotProposal) error {
 		return err
 	}
 
-	parentID := b.Parent()
+	parentID := b.ParentID()
 	onCommitState, err := state.NewDiff(parentID, v.backend)
 	if err != nil {
 		return err
@@ -155,12 +155,12 @@ func (v *verifier) ApricotProposalBlock(b *block.ApricotProposal) error {
 	return v.proposalBlock(b, onCommitState, onAbortState)
 }
 
-func (v *verifier) ApricotStandardBlock(b *block.ApricotStandard) error {
+func (v *verifier) ApricotStandardBlock(b block.Txs) error {
 	if err := v.apricotCommonBlock(b); err != nil {
 		return err
 	}
 
-	parentID := b.Parent()
+	parentID := b.ParentID()
 	onAcceptState, err := state.NewDiff(parentID, v)
 	if err != nil {
 		return err
@@ -169,7 +169,7 @@ func (v *verifier) ApricotStandardBlock(b *block.ApricotStandard) error {
 	return v.standardBlock(b, onAcceptState)
 }
 
-func (v *verifier) ApricotAtomicBlock(b block.Data) error {
+func (v *verifier) ApricotAtomicBlock(b *block.ApricotAtomic) error {
 	// We call [commonBlock] here rather than [apricotCommonBlock] because below
 	// this check we perform the more strict check that ApricotPhase5 isn't
 	// activated.
@@ -177,7 +177,7 @@ func (v *verifier) ApricotAtomicBlock(b block.Data) error {
 		return err
 	}
 
-	parentID := b.Parent()
+	parentID := b.ParentID()
 	currentTimestamp := v.getTimestamp(parentID)
 	cfg := v.txExecutorBackend.Config
 	if cfg.IsApricotPhase5Activated(currentTimestamp) {
@@ -212,7 +212,7 @@ func (v *verifier) ApricotAtomicBlock(b block.Data) error {
 		standardBlockState: standardBlockState{
 			inputs: atomicExecutor.Inputs,
 		},
-		blockData:      b,
+		block:          b,
 		onAcceptState:  atomicExecutor.OnAccept,
 		timestamp:      atomicExecutor.OnAccept.GetTimestamp(),
 		atomicRequests: atomicExecutor.AtomicRequests,
@@ -223,7 +223,7 @@ func (v *verifier) ApricotAtomicBlock(b block.Data) error {
 }
 
 func (v *verifier) banffOptionBlock(b block.Banff) error {
-	if err := v.commonBlock(b.Data); err != nil {
+	if err := v.commonBlock(b); err != nil {
 		return err
 	}
 
@@ -231,9 +231,9 @@ func (v *verifier) banffOptionBlock(b block.Banff) error {
 	// BanffProposal. This means that the timestamp must be
 	// standardized to a specific value. Therefore, we require the timestamp to
 	// be equal to the parents timestamp.
-	parentID := b.Parent
+	parentID := b.ParentID()
 	parentBlkTime := v.getTimestamp(parentID)
-	blkTime := b.Time
+	blkTime := b.Time()
 	if !blkTime.Equal(parentBlkTime) {
 		return fmt.Errorf(
 			"%w parent block timestamp (%s) option block timestamp (%s)",
@@ -246,17 +246,17 @@ func (v *verifier) banffOptionBlock(b block.Banff) error {
 }
 
 func (v *verifier) banffNonOptionBlock(b block.Banff) error {
-	if err := v.commonBlock(b.Data); err != nil {
+	if err := v.commonBlock(b); err != nil {
 		return err
 	}
 
-	parentID := b.Parent
+	parentID := b.ParentID()
 	parentState, ok := v.GetState(parentID)
 	if !ok {
 		return fmt.Errorf("%w: %s", state.ErrMissingParentState, parentID)
 	}
 
-	newChainTime := b.Time
+	newChainTime := b.Time()
 	parentChainTime := parentState.GetTimestamp()
 	if newChainTime.Before(parentChainTime) {
 		return fmt.Errorf(
@@ -289,7 +289,7 @@ func (v *verifier) apricotCommonBlock(b block.Interface) error {
 	// the parent ApricotProposal must include an AdvanceTimeTx with a
 	// timestamp after the Banff timestamp. This is verified not to occur
 	// during the verification of the ProposalBlock.
-	parentID := b.Parent()
+	parentID := b.ParentID()
 	timestamp := v.getTimestamp(parentID)
 	if v.txExecutorBackend.Config.IsBanffActivated(timestamp) {
 		return fmt.Errorf("%w: timestamp = %s", errApricotBlockIssuedAfterFork, timestamp)
@@ -297,15 +297,15 @@ func (v *verifier) apricotCommonBlock(b block.Interface) error {
 	return v.commonBlock(b)
 }
 
-func (v *verifier) commonBlock(b block.Data) error {
-	parentID := b.Parent
+func (v *verifier) commonBlock(b block.Interface) error {
+	parentID := b.ParentID()
 	parent, err := v.GetBlock(parentID)
 	if err != nil {
 		return err
 	}
 
-	expectedHeight := parent.Height + 1
-	height := b.Height
+	expectedHeight := parent.Height() + 1
+	height := b.Height()
 	if expectedHeight != height {
 		return fmt.Errorf(
 			"%w expected %d, but found %d",
@@ -318,16 +318,16 @@ func (v *verifier) commonBlock(b block.Data) error {
 }
 
 // abortBlock populates the state of this block if [nil] is returned
-func (v *verifier) abortBlock(b block.Data) error {
-	parentID := b.Parent
+func (v *verifier) abortBlock(b block.Interface) error {
+	parentID := b.ParentID()
 	onAcceptState, ok := v.getOnAbortState(parentID)
 	if !ok {
 		return fmt.Errorf("%w: %s", state.ErrMissingParentState, parentID)
 	}
 
-	blkID := b.ID
+	blkID := b.ID()
 	v.blkIDToState[blkID] = &blockState{
-		blockData:     b,
+		block:         b,
 		onAcceptState: onAcceptState,
 		timestamp:     onAcceptState.GetTimestamp(),
 	}
@@ -336,7 +336,7 @@ func (v *verifier) abortBlock(b block.Data) error {
 
 // commitBlock populates the state of this block if [nil] is returned
 func (v *verifier) commitBlock(b block.Interface) error {
-	parentID := b.Parent()
+	parentID := b.ParentID()
 	onAcceptState, ok := v.getOnCommitState(parentID)
 	if !ok {
 		return fmt.Errorf("%w: %s", state.ErrMissingParentState, parentID)
@@ -344,7 +344,7 @@ func (v *verifier) commitBlock(b block.Interface) error {
 
 	blkID := b.ID()
 	v.blkIDToState[blkID] = &blockState{
-		blockData:     b,
+		block:         b,
 		onAcceptState: onAcceptState,
 		timestamp:     onAcceptState.GetTimestamp(),
 	}
@@ -353,7 +353,7 @@ func (v *verifier) commitBlock(b block.Interface) error {
 
 // proposalBlock populates the state of this block if [nil] is returned
 func (v *verifier) proposalBlock(
-	b *block.ApricotProposal,
+	b block.Txs,
 	onCommitState state.Diff,
 	onAbortState state.Diff,
 ) error {
@@ -361,17 +361,17 @@ func (v *verifier) proposalBlock(
 		OnCommitState: onCommitState,
 		OnAbortState:  onAbortState,
 		Backend:       v.txExecutorBackend,
-		Tx:            b.Tx,
+		Tx:            b.Txs(),
 	}
 
-	if err := b.Tx.Unsigned.Visit(&txExecutor); err != nil {
-		txID := b.Tx.ID()
+	if err := b.Txs().Unsigned.Visit(&txExecutor); err != nil {
+		txID := b.Txs().ID()
 		v.MarkDropped(txID, err) // cache tx as dropped
 		return err
 	}
 
-	onCommitState.AddTx(b.Tx, status.Committed)
-	onAbortState.AddTx(b.Tx, status.Aborted)
+	onCommitState.AddTx(b.Txs(), status.Committed)
+	onAbortState.AddTx(b.Txs(), status.Aborted)
 
 	blkID := b.ID()
 	v.blkIDToState[blkID] = &blockState{
@@ -380,32 +380,32 @@ func (v *verifier) proposalBlock(
 			onAbortState:          onAbortState,
 			initiallyPreferCommit: txExecutor.PrefersCommit,
 		},
-		blockData: b,
+		block: b,
 		// It is safe to use [b.onAbortState] here because the timestamp will
 		// never be modified by an Apricot Abort block and the timestamp will
-		// always be the same as the Banff Proposal Block.
+		// always be the same as the Banff proposal Block.
 		timestamp: onAbortState.GetTimestamp(),
 	}
 
-	v.Mempool.Remove([]*txs.Tx{b.Tx})
+	v.Mempool.Remove([]*txs.Tx{b.Txs()})
 	return nil
 }
 
 // standardBlock populates the state of this block if [nil] is returned
 func (v *verifier) standardBlock(
-	b *block.ApricotStandard,
+	b block.Txs,
 	onAcceptState state.Diff,
 ) error {
 	blkState := &blockState{
-		blockData:      b,
+		block:          b,
 		onAcceptState:  onAcceptState,
 		timestamp:      onAcceptState.GetTimestamp(),
 		atomicRequests: make(map[ids.ID]*atomic.Requests),
 	}
 
 	// Finally we process the transactions
-	funcs := make([]func(), 0, len(b.Transactions))
-	for _, tx := range b.Transactions {
+	funcs := make([]func(), 0, len(b.Txs()))
+	for _, tx := range b.Txs() {
 		txExecutor := executor.StandardTxExecutor{
 			Backend: v.txExecutorBackend,
 			State:   onAcceptState,
@@ -458,7 +458,7 @@ func (v *verifier) standardBlock(
 	blkID := b.ID()
 	v.blkIDToState[blkID] = blkState
 
-	v.Mempool.Remove(b.Transactions)
+	v.Mempool.Remove(b.Txs())
 	return nil
 }
 
@@ -471,7 +471,7 @@ func (v *verifier) verifyUniqueInputs(block block.Interface, inputs set.Set[ids.
 
 	// Check for conflicts in ancestors.
 	for {
-		parentID := block.Parent()
+		parentID := block.ParentID()
 		parentState, ok := v.blkIDToState[parentID]
 		if !ok {
 			// The parent state isn't pinned in memory.
@@ -483,6 +483,6 @@ func (v *verifier) verifyUniqueInputs(block block.Interface, inputs set.Set[ids.
 			return errConflictingParentTxs
 		}
 
-		block = parentState.blockData
+		block = parentState.block
 	}
 }

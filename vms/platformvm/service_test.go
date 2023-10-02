@@ -749,7 +749,7 @@ func TestGetBlock(t *testing.T) {
 			preferred, err := service.vm.Builder.Preferred()
 			require.NoError(err)
 
-			statelessBlock, err := block.NewBanff(
+			statelessBlock, err := block.NewBanffStandard(
 				preferred.Timestamp(),
 				preferred.ID(),
 				preferred.Height()+1,

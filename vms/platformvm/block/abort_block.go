@@ -15,33 +15,25 @@ var (
 	_ Interface = (*ApricotAbort)(nil)
 )
 
-func NewBanffAbort(
-	time time.Time,
-	parentID ids.ID,
-	height uint64,
-) (Banff, error) {
-	blk := Banff{
-		Block: Block{
-			Interface: &BanffAbort{},
-			Data: Data{
-				Parent: parentID,
-				Height: height,
-			},
+func NewBanffAbort(time time.Time, parentID ids.ID, height uint64) (*BanffAbort, error) {
+	blk := &BanffAbort{
+		banffData: banffData{
+			Time: time,
 		},
-		Time: time,
 	}
 
-	return blk, blk.initialize(blk.Bytes)
+	data, err := newData(blk, parentID, height)
+	blk.data = data
+
+	return blk, err
 }
 
-type BanffAbort struct{}
+type BanffAbort struct {
+	banffData
+}
 
 func (*BanffAbort) InitCtx(*snow.Context) {
 	return
-}
-
-func (*BanffAbort) initialize([]byte) error {
-	return nil
 }
 
 func (b *BanffAbort) Visit(v Visitor) error {
@@ -54,22 +46,16 @@ func (b *BanffAbort) Visit(v Visitor) error {
 func NewApricotAbort(
 	parentID ids.ID,
 	height uint64,
-) (Block, error) {
-	blk := Block{
-		Interface: &ApricotAbort{},
-		Data: Data{
-			Parent: parentID,
-			Height: height,
-		},
-	}
+) (*ApricotAbort, error) {
+	blk := &ApricotAbort{}
 
-	return blk, blk.initialize(blk.Bytes)
+	data, err := newData(blk, parentID, height)
+	blk.data = data
+	return blk, err
 }
 
-type ApricotAbort struct{}
-
-func (b *ApricotAbort) initialize(bytes []byte) error {
-	return nil
+type ApricotAbort struct {
+	data
 }
 
 func (*ApricotAbort) InitCtx(*snow.Context) {}

@@ -10,7 +10,7 @@ import (
 	"github.com/ava-labs/avalanchego/vms/platformvm/block"
 )
 
-var _ block.Visitor = (*verifier)(nil)
+var _ block.Visitor = (*options)(nil)
 
 // options supports build new option blocks
 type options struct {
@@ -28,7 +28,7 @@ func (*options) BanffCommitBlock(*block.BanffCommit) error {
 }
 
 func (o *options) BanffProposalBlock(b *block.BanffProposal) error {
-	timestamp := b.Timestamp()
+	timestamp := b.Time
 	blkID := b.ID()
 	nextHeight := b.Height() + 1
 

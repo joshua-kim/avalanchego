@@ -34,40 +34,35 @@ func TestStandardBlocks(t *testing.T) {
 		require.NoError(err)
 
 		// parse block
-		parsed, err := Parse(cdc, apricotStandardBlk.Bytes())
+		parsed, err := Parse(cdc, apricotStandardBlk.Bytes)
 		require.NoError(err)
+		parsedApricotStandardBlk, ok := parsed.(*ApricotStandard)
+		require.True(ok)
 
 		// compare content
-		require.Equal(apricotStandardBlk.ID(), parsed.ID())
-		require.Equal(apricotStandardBlk.Bytes(), parsed.Bytes())
-		require.Equal(apricotStandardBlk.Parent(), parsed.Parent())
-		require.Equal(apricotStandardBlk.Height(), parsed.Height())
-
-		require.IsType(&ApricotStandard{}, parsed)
-		require.Equal(txs, parsed.Txs())
+		require.Equal(apricotStandardBlk.ID, parsedApricotStandardBlk.ID)
+		require.Equal(apricotStandardBlk.Bytes, parsedApricotStandardBlk.Bytes)
+		require.Equal(apricotStandardBlk.ParentID, parsedApricotStandardBlk.ParentID)
+		require.Equal(apricotStandardBlk.Height, parsedApricotStandardBlk.Height)
+		require.Equal(txs, parsedApricotStandardBlk.Txs)
 
 		// check that banff standard block can be built and parsed
-		banffStandardBlk, err := NewBanff(blkTimestamp, parentID, height, txs)
+		banffStandardBlk, err := NewBanffStandard(blkTimestamp, parentID, height, txs)
 		require.NoError(err)
 
 		// parse block
-		parsed, err = Parse(cdc, banffStandardBlk.Bytes())
+		parsed, err = Parse(cdc, banffStandardBlk.Bytes)
 		require.NoError(err)
+		parsedBanffStandardBlk, ok := parsed.(*BanffStandard)
+		require.True(ok)
 
 		// compare content
-		require.Equal(banffStandardBlk.ID(), parsed.ID())
-		require.Equal(banffStandardBlk.Bytes(), parsed.Bytes())
-		require.Equal(banffStandardBlk.Parent(), parsed.Parent())
-		require.Equal(banffStandardBlk.Height(), parsed.Height())
-		require.IsType(&BanffStandard{}, parsed)
-		parsedBanffStandardBlk := parsed.(*BanffStandard)
-		require.Equal(txs, parsedBanffStandardBlk.Txs())
-
-		// timestamp check for banff blocks only
-		require.Equal(banffStandardBlk.Timestamp(), parsedBanffStandardBlk.Timestamp())
-
-		// backward compatibility check
-		require.Equal(parsed.Txs(), parsedBanffStandardBlk.Txs())
+		require.Equal(banffStandardBlk.ID, parsedBanffStandardBlk.ID)
+		require.Equal(banffStandardBlk.Bytes, parsedBanffStandardBlk.Bytes)
+		require.Equal(banffStandardBlk.ParentID, parsedBanffStandardBlk.ParentID)
+		require.Equal(banffStandardBlk.Height, parsedBanffStandardBlk.Height)
+		require.Equal(banffStandardBlk.Txs, parsedBanffStandardBlk.Txs)
+		require.Equal(banffStandardBlk.Time, parsedBanffStandardBlk.Time)
 	}
 }
 
@@ -90,20 +85,18 @@ func TestProposalBlocks(t *testing.T) {
 		require.NoError(err)
 
 		// parse block
-		parsed, err := Parse(cdc, apricotProposalBlk.Bytes())
+		parsed, err := Parse(cdc, apricotProposalBlk.Bytes)
 		require.NoError(err)
+		parsedApricotProposalBlk, ok := parsed.(*ApricotProposal)
+		require.True(ok)
 
 		// compare content
-		require.Equal(apricotProposalBlk.ID(), parsed.ID())
-		require.Equal(apricotProposalBlk.Bytes(), parsed.Bytes())
-		require.Equal(apricotProposalBlk.Parent(), parsed.Parent())
-		require.Equal(apricotProposalBlk.Height(), parsed.Height())
+		require.Equal(apricotProposalBlk.ID, parsedApricotProposalBlk.ID)
+		require.Equal(apricotProposalBlk.Bytes, parsedApricotProposalBlk.Bytes)
+		require.Equal(apricotProposalBlk.ParentID, parsedApricotProposalBlk.ParentID)
+		require.Equal(apricotProposalBlk.Height, parsedApricotProposalBlk.Height)
+		require.Equal(apricotProposalBlk.Txs, parsedApricotProposalBlk.Txs)
 
-		require.IsType(&ApricotProposal{}, parsed)
-		parsedApricotProposalBlk := parsed.(*ApricotProposal)
-		require.Equal([]*txs.Tx{tx}, parsedApricotProposalBlk.Txs())
-
-		// check that banff proposal block can be built and parsed
 		banffProposalBlk, err := NewBanffProposalBlock(
 			blkTimestamp,
 			parentID,
@@ -113,23 +106,18 @@ func TestProposalBlocks(t *testing.T) {
 		require.NoError(err)
 
 		// parse block
-		parsed, err = Parse(cdc, banffProposalBlk.Bytes())
+		parsed, err = Parse(cdc, banffProposalBlk.Bytes)
 		require.NoError(err)
+		parsedBanffProposalBlk, ok := parsed.(*BanffProposal)
+		require.True(ok)
 
 		// compare content
-		require.Equal(banffProposalBlk.ID(), parsed.ID())
-		require.Equal(banffProposalBlk.Bytes(), parsed.Bytes())
-		require.Equal(banffProposalBlk.Parent(), banffProposalBlk.Parent())
-		require.Equal(banffProposalBlk.Height(), parsed.Height())
-		require.IsType(&BanffProposal{}, parsed)
-		parsedBanffProposalBlk := parsed.(*BanffProposal)
-		require.Equal([]*txs.Tx{tx}, parsedBanffProposalBlk.Txs())
-
-		// timestamp check for banff blocks only
-		require.Equal(banffProposalBlk.Timestamp(), parsedBanffProposalBlk.Timestamp())
-
-		// backward compatibility check
-		require.Equal(parsedApricotProposalBlk.Txs(), parsedBanffProposalBlk.Txs())
+		require.Equal(banffProposalBlk.ID, parsedBanffProposalBlk.ID)
+		require.Equal(banffProposalBlk.Bytes, parsedBanffProposalBlk.Bytes)
+		require.Equal(banffProposalBlk.ParentID, parsedBanffProposalBlk.ParentID)
+		require.Equal(banffProposalBlk.Height, parsedBanffProposalBlk.Height)
+		require.Equal(banffProposalBlk.Txs, parsedBanffProposalBlk.Txs)
+		require.Equal(banffProposalBlk.Time, parsedBanffProposalBlk.Time)
 	}
 }
 
@@ -146,33 +134,33 @@ func TestCommitBlock(t *testing.T) {
 		require.NoError(err)
 
 		// parse block
-		parsed, err := Parse(cdc, apricotCommitBlk.Bytes())
+		parsed, err := Parse(cdc, apricotCommitBlk.Bytes)
 		require.NoError(err)
+		parsedApricotCommitBlk, ok := parsed.(*ApricotCommit)
+		require.True(ok)
 
 		// compare content
-		require.Equal(apricotCommitBlk.ID(), parsed.ID())
-		require.Equal(apricotCommitBlk.Bytes(), parsed.Bytes())
-		require.Equal(apricotCommitBlk.Parent(), parsed.Parent())
-		require.Equal(apricotCommitBlk.Height(), parsed.Height())
+		require.Equal(apricotCommitBlk.ID, parsedApricotCommitBlk.ID)
+		require.Equal(apricotCommitBlk.Bytes, parsedApricotCommitBlk.Bytes)
+		require.Equal(apricotCommitBlk.ParentID, parsedApricotCommitBlk.ParentID)
+		require.Equal(apricotCommitBlk.Height, parsedApricotCommitBlk.Height)
 
 		// check that banff commit block can be built and parsed
 		banffCommitBlk, err := NewBanffCommit(blkTimestamp, parentID, height)
 		require.NoError(err)
 
 		// parse block
-		parsed, err = Parse(cdc, banffCommitBlk.Bytes())
+		parsed, err = Parse(cdc, banffCommitBlk.Bytes)
 		require.NoError(err)
+		parsedBanffCommitBlk, ok := parsed.(*BanffCommit)
+		require.True(ok)
 
 		// compare content
-		require.Equal(banffCommitBlk.ID(), parsed.ID())
-		require.Equal(banffCommitBlk.Bytes(), parsed.Bytes())
-		require.Equal(banffCommitBlk.Parent(), banffCommitBlk.Parent())
-		require.Equal(banffCommitBlk.Height(), parsed.Height())
-
-		// timestamp check for banff blocks only
-		require.IsType(&BanffCommit{}, parsed)
-		parsedBanffCommitBlk := parsed.(*BanffCommit)
-		require.Equal(banffCommitBlk.Timestamp(), parsedBanffCommitBlk.Timestamp())
+		require.Equal(banffCommitBlk.ID, parsedBanffCommitBlk.ID)
+		require.Equal(banffCommitBlk.Bytes, parsedBanffCommitBlk.Bytes)
+		require.Equal(banffCommitBlk.ParentID, parsedBanffCommitBlk.ParentID)
+		require.Equal(banffCommitBlk.Height, parsedBanffCommitBlk.Height)
+		require.Equal(banffCommitBlk.Time, parsedBanffCommitBlk.Time)
 	}
 }
 
@@ -189,33 +177,37 @@ func TestAbortBlock(t *testing.T) {
 		require.NoError(err)
 
 		// parse block
-		parsed, err := Parse(cdc, apricotAbortBlk.Bytes())
+		parsed, err := Parse(cdc, apricotAbortBlk.Bytes)
 		require.NoError(err)
+		parsedApricotAbortBlk, ok := parsed.(*ApricotAbort)
+		require.True(ok)
 
 		// compare content
-		require.Equal(apricotAbortBlk.ID(), parsed.ID())
-		require.Equal(apricotAbortBlk.Bytes(), parsed.Bytes())
-		require.Equal(apricotAbortBlk.Parent(), parsed.Parent())
-		require.Equal(apricotAbortBlk.Height(), parsed.Height())
+		require.Equal(apricotAbortBlk.ID, parsedApricotAbortBlk.ID)
+		require.Equal(apricotAbortBlk.Bytes, parsedApricotAbortBlk.Bytes)
+		require.Equal(apricotAbortBlk.ParentID, parsedApricotAbortBlk.ParentID)
+		require.Equal(apricotAbortBlk.Height, parsedApricotAbortBlk.Height)
 
 		// check that banff abort block can be built and parsed
 		banffAbortBlk, err := NewBanffAbort(blkTimestamp, parentID, height)
 		require.NoError(err)
 
 		// parse block
-		parsed, err = Parse(cdc, banffAbortBlk.Bytes())
+		parsed, err = Parse(cdc, banffAbortBlk.Bytes)
 		require.NoError(err)
+		parsedBanffAbort, ok := parsed.(*BanffAbort)
+		require.True(ok)
 
 		// compare content
-		require.Equal(banffAbortBlk.ID(), parsed.ID())
-		require.Equal(banffAbortBlk.Bytes(), parsed.Bytes())
-		require.Equal(banffAbortBlk.Parent(), banffAbortBlk.Parent())
-		require.Equal(banffAbortBlk.Height(), parsed.Height())
+		require.Equal(banffAbortBlk.ID, parsedBanffAbort.ID)
+		require.Equal(banffAbortBlk.Bytes, parsedBanffAbort.Bytes)
+		require.Equal(banffAbortBlk.ParentID, parsedBanffAbort.ParentID)
+		require.Equal(banffAbortBlk.Height, parsedBanffAbort.Height)
 
 		// timestamp check for banff blocks only
 		require.IsType(&BanffAbort{}, parsed)
 		parsedBanffAbortBlk := parsed.(*BanffAbort)
-		require.Equal(banffAbortBlk.Time(), parsedBanffAbortBlk.Timestamp())
+		require.Equal(banffAbortBlk.Time, parsedBanffAbortBlk.Time)
 	}
 }
 
@@ -237,18 +229,17 @@ func TestAtomicBlock(t *testing.T) {
 		require.NoError(err)
 
 		// parse block
-		parsed, err := Parse(cdc, atomicBlk.Bytes())
+		parsed, err := Parse(cdc, atomicBlk.Bytes)
 		require.NoError(err)
+		parsedAtomicBlk, ok := parsed.(*ApricotAtomic)
+		require.True(ok)
 
 		// compare content
-		require.Equal(atomicBlk.ID(), parsed.ID())
-		require.Equal(atomicBlk.Bytes(), parsed.Bytes())
-		require.Equal(atomicBlk.Parent(), parsed.Parent())
-		require.Equal(atomicBlk.Height(), parsed.Height())
-
-		require.IsType(&ApricotAtomic{}, parsed)
-		parsedAtomicBlk := parsed.(*ApricotAtomic)
-		require.Equal([]*txs.Tx{tx}, parsedAtomicBlk.Txs())
+		require.Equal(atomicBlk.ID, parsedAtomicBlk.ID)
+		require.Equal(atomicBlk.Bytes, parsedAtomicBlk.Bytes)
+		require.Equal(atomicBlk.ParentID, parsedAtomicBlk.ParentID)
+		require.Equal(atomicBlk.Height, parsedAtomicBlk.Height)
+		require.Equal(atomicBlk.Tx, parsedAtomicBlk.Tx)
 	}
 }
 

@@ -9,90 +9,98 @@ import (
 
 	"github.com/ava-labs/avalanchego/ids"
 	"github.com/ava-labs/avalanchego/snow"
-	"github.com/ava-labs/avalanchego/vms/platformvm/txs"
+	pvmTxs "github.com/ava-labs/avalanchego/vms/platformvm/txs"
 )
 
 var (
-	_ Interface = (*BanffStandard)(nil)
-	_ Interface = (*ApricotStandard)(nil)
+	_ Banff = (*BanffStandard)(nil)
+	_ Txs   = (*BanffStandard)(nil)
+
+	_ Txs = (*ApricotStandard)(nil)
 )
 
-type BanffStandard struct {
-	Transactions []*txs.Tx `serialize:"true" json:"txs"`
-}
-
-func (BanffStandard) InitCtx(*snow.Context) {}
-
-func (BanffStandard) initialize([]byte) error {
-	return nil
-}
-
-func (b BanffStandard) Visit(v Visitor) error {
-	return v.BanffStandardBlock(b)
-}
-
-func NewBanff(
+func NewBanffStandard(
 	time time.Time,
 	parentID ids.ID,
 	height uint64,
-	txs []*txs.Tx,
-) (Banff, error) {
-	blk := Banff{
-		Block: Block{
-			Interface: &BanffStandard{
-				Transactions: txs,
-			},
-			Data: Data{
-				Parent: parentID,
-				Height: height,
+	txs []*pvmTxs.Tx,
+) (*BanffStandard, error) {
+	blk := &BanffStandard{
+		banffData: banffData{
+			banffDataFields: banffDataFields{
+				Time: time,
 			},
 		},
-		Time: time,
+		transactions: transactions{
+			transactionsFields: transactionsFields{
+				Txs: txs,
+			},
+		},
 	}
 
-	return blk, blk.initialize(blk.Bytes)
+	data, err := newData(blk, parentID, height)
+	blk.data = data
+	return blk, err
+}
+
+type BanffStandard struct {
+	banffData
+	transactions
+}
+
+func (*BanffStandard) InitCtx(*snow.Context) {}
+
+func (b *BanffStandard) Visit(v Visitor) error {
+	return v.BanffStandardBlock(b)
+}
+
+func NewApricotStandard(
+	parentID ids.ID,
+	height uint64,
+	txs []*pvmTxs.Tx,
+) (*ApricotStandard, error) {
+	blk := &ApricotStandard{
+		transactions: transactions{
+			transactionsFields: transactionsFields{
+				Txs: txs,
+			},
+		},
+	}
+
+	for _, tx := range blk.Txs() {
+		if err := tx.Initialize(pvmTxs.Codec); err != nil {
+			return nil, fmt.Errorf("failed to sign block: %w", err)
+		}
+	}
+
+	data, err := newData(blk, parentID, height)
+	blk.data = data
+	return blk, err
 }
 
 type ApricotStandard struct {
-	Transactions []*txs.Tx `serialize:"true" json:"txs"`
+	data
+	transactions
 }
 
-func (b ApricotStandard) initialize([]byte) error {
-	for _, tx := range b.Transactions {
-		if err := tx.Initialize(txs.Codec); err != nil {
-			return fmt.Errorf("failed to sign block: %w", err)
-		}
-	}
-	return nil
-}
-
-func (b ApricotStandard) InitCtx(ctx *snow.Context) {
-	for _, tx := range b.Transactions {
+func (b *ApricotStandard) InitCtx(ctx *snow.Context) {
+	for _, tx := range b.Txs() {
 		tx.Unsigned.InitCtx(ctx)
 	}
 }
 
-func (b ApricotStandard) Visit(v Visitor) error {
+func (b *ApricotStandard) Visit(v Visitor) error {
 	return v.ApricotStandardBlock(b)
 }
 
-// NewApricotStandard is kept for testing purposes only.
-// Following Banff activation and subsequent code cleanup, Apricot Standard blocks
-// should be only verified (upon bootstrap), never created anymore
-func NewApricotStandard(
-	parentID ids.ID,
-	height uint64,
-	txs []*txs.Tx,
-) (Block, error) {
-	blk := Block{
-		Interface: &ApricotStandard{
-			Transactions: txs,
-		},
-		Data: Data{
-			Parent: parentID,
-			Height: height,
-		},
-	}
+type transactionsFields struct {
+	Txs []*pvmTxs.Tx `serialize:"true" json:"txs"`
+}
 
-	return blk, blk.initialize(blk.Bytes)
+type transactions struct {
+	transactionsFields
+}
+
+func (t transactions) Txs() []*pvmTxs.Tx {
+	return t.transactionsFields.Txs
 }

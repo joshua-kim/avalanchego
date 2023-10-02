@@ -66,7 +66,7 @@ func (b *backend) getOnCommitState(blkID ids.ID) (state.Diff, bool) {
 func (b *backend) GetBlock(blkID ids.ID) (block.Interface, error) {
 	// See if the block is in memory.
 	if blk, ok := b.blkIDToState[blkID]; ok {
-		return blk.blockData, nil
+		return blk.block, nil
 	}
 
 	// The block isn't in memory. Check the database.

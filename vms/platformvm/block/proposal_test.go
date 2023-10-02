@@ -50,13 +50,13 @@ func TestNewBanffProposalBlock(t *testing.T) {
 	require.NoError(err)
 
 	// Make sure the block and tx are initialized
-	require.NotEmpty(blk.Bytes())
-	require.NotEmpty(blk.Tx.Bytes())
-	require.NotEqual(ids.Empty, blk.Tx.ID())
-	require.Equal(tx.Bytes(), blk.Tx.Bytes())
-	require.Equal(timestamp, blk.Timestamp())
-	require.Equal(parentID, blk.Parent())
-	require.Equal(height, blk.Height())
+	require.NotEmpty(blk.Bytes)
+	require.NotEmpty(blk.Txs.Bytes())
+	require.NotEqual(ids.Empty, blk.Txs.ID())
+	require.Equal(tx.Bytes(), blk.Txs.Bytes())
+	require.Equal(timestamp, blk.Time)
+	require.Equal(parentID, blk.ParentID)
+	require.Equal(height, blk.Height)
 }
 
 func TestNewApricotProposalBlock(t *testing.T) {
@@ -91,10 +91,10 @@ func TestNewApricotProposalBlock(t *testing.T) {
 	require.NoError(err)
 
 	// Make sure the block and tx are initialized
-	require.NotEmpty(blk.Bytes())
-	require.NotEmpty(blk.Tx.Bytes())
-	require.NotEqual(ids.Empty, blk.Tx.ID())
-	require.Equal(tx.Bytes(), blk.Tx.Bytes())
-	require.Equal(parentID, blk.Parent())
-	require.Equal(height, blk.Height())
+	require.NotEmpty(blk.Bytes)
+	require.NotEmpty(blk.Txs.Bytes())
+	require.NotEqual(ids.Empty, blk.Txs.ID())
+	require.Equal(tx.Bytes(), blk.Txs.Bytes())
+	require.Equal(parentID, blk.ParentID)
+	require.Equal(height, blk.Height)
 }

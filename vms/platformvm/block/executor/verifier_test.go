@@ -46,7 +46,7 @@ func TestVerifierVisitProposalBlock(t *testing.T) {
 		lastAccepted: parentID,
 		blkIDToState: map[ids.ID]*blockState{
 			parentID: {
-				blockData:     parentStatelessBlk,
+				block:         parentStatelessBlk,
 				onAcceptState: parentOnAcceptState,
 			},
 		},
@@ -87,7 +87,7 @@ func TestVerifierVisitProposalBlock(t *testing.T) {
 		},
 	)
 	require.NoError(err)
-	apricotBlk.Tx.Unsigned = blkTx
+	apricotBlk.Txs.Unsigned = blkTx
 
 	// Set expectations for dependencies.
 	tx := apricotBlk.Txs()[0]
@@ -99,7 +99,7 @@ func TestVerifierVisitProposalBlock(t *testing.T) {
 	require.NoError(blk.Verify(context.Background()))
 	require.Contains(verifier.backend.blkIDToState, apricotBlk.ID())
 	gotBlkState := verifier.backend.blkIDToState[apricotBlk.ID()]
-	require.Equal(apricotBlk, gotBlkState.blockData)
+	require.Equal(apricotBlk, gotBlkState.block)
 	require.Equal(timestamp, gotBlkState.timestamp)
 
 	// Assert that the expected tx statuses are set.
@@ -130,7 +130,7 @@ func TestVerifierVisitAtomicBlock(t *testing.T) {
 	backend := &backend{
 		blkIDToState: map[ids.ID]*blockState{
 			parentID: {
-				blockData:     parentStatelessBlk,
+				block:         parentStatelessBlk,
 				onAcceptState: parentState,
 			},
 		},
@@ -194,7 +194,7 @@ func TestVerifierVisitAtomicBlock(t *testing.T) {
 
 	require.Contains(verifier.backend.blkIDToState, apricotBlk.ID())
 	gotBlkState := verifier.backend.blkIDToState[apricotBlk.ID()]
-	require.Equal(apricotBlk, gotBlkState.blockData)
+	require.Equal(apricotBlk, gotBlkState.block)
 	require.Equal(onAccept, gotBlkState.onAcceptState)
 	require.Equal(inputs, gotBlkState.inputs)
 	require.Equal(timestamp, gotBlkState.timestamp)
@@ -217,7 +217,7 @@ func TestVerifierVisitStandardBlock(t *testing.T) {
 	backend := &backend{
 		blkIDToState: map[ids.ID]*blockState{
 			parentID: {
-				blockData:     parentStatelessBlk,
+				block:         parentStatelessBlk,
 				onAcceptState: parentState,
 			},
 		},
@@ -280,7 +280,7 @@ func TestVerifierVisitStandardBlock(t *testing.T) {
 		},
 	)
 	require.NoError(err)
-	apricotBlk.Transactions[0].Unsigned = blkTx
+	apricotBlk.Txs[0].Unsigned = blkTx
 
 	// Set expectations for dependencies.
 	timestamp := time.Now()
@@ -294,7 +294,7 @@ func TestVerifierVisitStandardBlock(t *testing.T) {
 	// Assert expected state.
 	require.Contains(verifier.backend.blkIDToState, apricotBlk.ID())
 	gotBlkState := verifier.backend.blkIDToState[apricotBlk.ID()]
-	require.Equal(apricotBlk, gotBlkState.blockData)
+	require.Equal(apricotBlk, gotBlkState.block)
 	require.Equal(set.Set[ids.ID]{}, gotBlkState.inputs)
 	require.Equal(timestamp, gotBlkState.timestamp)
 
@@ -317,7 +317,7 @@ func TestVerifierVisitCommitBlock(t *testing.T) {
 	backend := &backend{
 		blkIDToState: map[ids.ID]*blockState{
 			parentID: {
-				blockData: parentStatelessBlk,
+				block: parentStatelessBlk,
 				proposalBlockState: proposalBlockState{
 					onCommitState: parentOnCommitState,
 					onAbortState:  parentOnAbortState,
@@ -387,7 +387,7 @@ func TestVerifierVisitAbortBlock(t *testing.T) {
 	backend := &backend{
 		blkIDToState: map[ids.ID]*blockState{
 			parentID: {
-				blockData: parentStatelessBlk,
+				block: parentStatelessBlk,
 				proposalBlockState: proposalBlockState{
 					onCommitState: parentOnCommitState,
 					onAbortState:  parentOnAbortState,
@@ -558,7 +558,7 @@ func TestBanffAbortBlockTimestampChecks(t *testing.T) {
 			require.NoError(err)
 			backend.blkIDToState[parentID] = &blockState{
 				timestamp: test.parentTime,
-				blockData: parentStatelessBlk,
+				block:     parentStatelessBlk,
 				proposalBlockState: proposalBlockState{
 					onCommitState: onCommitState,
 					onAbortState:  onAbortState,
@@ -651,7 +651,7 @@ func TestBanffCommitBlockTimestampChecks(t *testing.T) {
 			require.NoError(err)
 			backend.blkIDToState[parentID] = &blockState{
 				timestamp: test.parentTime,
-				blockData: parentStatelessBlk,
+				block:     parentStatelessBlk,
 				proposalBlockState: proposalBlockState{
 					onCommitState: onCommitState,
 					onAbortState:  onAbortState,
@@ -689,11 +689,11 @@ func TestVerifierVisitStandardBlockWithDuplicateInputs(t *testing.T) {
 				standardBlockState: standardBlockState{
 					inputs: atomicInputs,
 				},
-				blockData:     grandParentStatelessBlk,
+				block:         grandParentStatelessBlk,
 				onAcceptState: grandParentState,
 			},
 			parentID: {
-				blockData:     parentStatelessBlk,
+				block:         parentStatelessBlk,
 				onAcceptState: parentState,
 			},
 		},
@@ -752,7 +752,7 @@ func TestVerifierVisitStandardBlockWithDuplicateInputs(t *testing.T) {
 		},
 	)
 	require.NoError(err)
-	blk.Transactions[0].Unsigned = blkTx
+	blk.Txs[0].Unsigned = blkTx
 
 	// Set expectations for dependencies.
 	timestamp := time.Now()
@@ -779,7 +779,7 @@ func TestVerifierVisitApricotStandardBlockWithProposalBlockParent(t *testing.T) 
 	backend := &backend{
 		blkIDToState: map[ids.ID]*blockState{
 			parentID: {
-				blockData: parentStatelessBlk,
+				block: parentStatelessBlk,
 				proposalBlockState: proposalBlockState{
 					onCommitState: parentOnCommitState,
 					onAbortState:  parentOnAbortState,
@@ -837,7 +837,7 @@ func TestVerifierVisitBanffStandardBlockWithProposalBlockParent(t *testing.T) {
 	backend := &backend{
 		blkIDToState: map[ids.ID]*blockState{
 			parentID: {
-				blockData: parentStatelessBlk,
+				block: parentStatelessBlk,
 				proposalBlockState: proposalBlockState{
 					onCommitState: parentOnCommitState,
 					onAbortState:  parentOnAbortState,
@@ -861,7 +861,7 @@ func TestVerifierVisitBanffStandardBlockWithProposalBlockParent(t *testing.T) {
 		backend: backend,
 	}
 
-	blk, err := block.NewBanff(
+	blk, err := block.NewBanffStandard(
 		parentTime.Add(time.Second),
 		parentID,
 		2,
@@ -898,7 +898,7 @@ func TestVerifierVisitApricotCommitBlockUnexpectedParentState(t *testing.T) {
 		backend: &backend{
 			blkIDToState: map[ids.ID]*blockState{
 				parentID: {
-					blockData: parentStatelessBlk,
+					block: parentStatelessBlk,
 				},
 			},
 			state: s,
@@ -941,7 +941,7 @@ func TestVerifierVisitBanffCommitBlockUnexpectedParentState(t *testing.T) {
 		backend: &backend{
 			blkIDToState: map[ids.ID]*blockState{
 				parentID: {
-					blockData: parentStatelessBlk,
+					block:     parentStatelessBlk,
 					timestamp: timestamp,
 				},
 			},
@@ -985,7 +985,7 @@ func TestVerifierVisitApricotAbortBlockUnexpectedParentState(t *testing.T) {
 		backend: &backend{
 			blkIDToState: map[ids.ID]*blockState{
 				parentID: {
-					blockData: parentStatelessBlk,
+					block: parentStatelessBlk,
 				},
 			},
 			state: s,
@@ -1028,7 +1028,7 @@ func TestVerifierVisitBanffAbortBlockUnexpectedParentState(t *testing.T) {
 		backend: &backend{
 			blkIDToState: map[ids.ID]*blockState{
 				parentID: {
-					blockData: parentStatelessBlk,
+					block:     parentStatelessBlk,
 					timestamp: timestamp,
 				},
 			},

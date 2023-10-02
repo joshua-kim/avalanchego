@@ -625,7 +625,7 @@ func TestParsedStateBlock(t *testing.T) {
 	}
 
 	{
-		blk, err := block.NewBanff(time.Now(), ids.GenerateTestID(), 1000, []*txs.Tx{
+		blk, err := block.NewBanffStandard(time.Now(), ids.GenerateTestID(), 1000, []*txs.Tx{
 			{
 				Unsigned: &txs.RewardValidatorTx{
 					TxID: ids.GenerateTestID(),

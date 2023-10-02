@@ -52,7 +52,7 @@ func TestApricotProposalBlockTimeVerification(t *testing.T) {
 	// store parent block, with relevant quantities
 	onParentAccept := state.NewMockDiff(ctrl)
 	env.blkManager.(*manager).blkIDToState[parentID] = &blockState{
-		blockData:     apricotParentBlk,
+		block:         apricotParentBlk,
 		onAcceptState: onParentAccept,
 	}
 	env.blkManager.(*manager).lastAccepted = parentID
@@ -175,7 +175,7 @@ func TestBanffProposalBlockTimeVerification(t *testing.T) {
 	onParentAccept.EXPECT().GetCurrentSupply(constants.PrimaryNetworkID).Return(uint64(1000), nil).AnyTimes()
 
 	env.blkManager.(*manager).blkIDToState[parentID] = &blockState{
-		blockData:     banffParentBlk,
+		block:         banffParentBlk,
 		onAcceptState: onParentAccept,
 		timestamp:     parentTime,
 	}
@@ -361,7 +361,7 @@ func TestBanffProposalBlockTimeVerification(t *testing.T) {
 		)
 		require.NoError(err)
 
-		statelessProposalBlock.Transactions = []*txs.Tx{blkTx}
+		statelessProposalBlock.Txs = []*txs.Tx{blkTx}
 		block := env.blkManager.NewBlock(statelessProposalBlock)
 		err = block.Verify(context.Background())
 		require.ErrorIs(err, errBanffProposalBlockWithMultipleTransactions)

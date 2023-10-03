@@ -54,7 +54,7 @@ func TestNewBanffStandardBlock(t *testing.T) {
 	require.NotEqual(ids.Empty, blk.Txs[0].ID())
 	require.Equal(tx.Bytes(), blk.Txs[0].Bytes())
 	require.Equal(timestamp, blk.Time)
-	require.Equal(parentID, blk.ParentID)
+	require.Equal(parentID, blk.Parent)
 	require.Equal(height, blk.Height)
 }
 
@@ -94,6 +94,6 @@ func TestNewApricotStandardBlock(t *testing.T) {
 	require.NotEmpty(blk.Txs[0].Bytes())
 	require.NotEqual(ids.Empty, blk.Txs[0].ID)
 	require.Equal(tx.Bytes(), blk.Txs[0].Bytes)
-	require.Equal(parentID, blk.ParentID)
+	require.Equal(parentID, blk.Parent)
 	require.Equal(height, blk.Height)
 }

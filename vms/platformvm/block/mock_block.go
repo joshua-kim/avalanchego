@@ -110,7 +110,7 @@ func (mr *MockBlockMockRecorder) Parent() *gomock.Call {
 // Txs mocks base method.
 func (m *MockBlock) Txs() []*txs.Tx {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "Txs")
+	ret := m.ctrl.Call(m, "Transactions")
 	ret0, _ := ret[0].([]*txs.Tx)
 	return ret0
 }
@@ -118,7 +118,7 @@ func (m *MockBlock) Txs() []*txs.Tx {
 // Txs indicates an expected call of Txs.
 func (mr *MockBlockMockRecorder) Txs() *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Txs", reflect.TypeOf((*MockBlock)(nil).Txs))
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Transactions", reflect.TypeOf((*MockBlock)(nil).Txs))
 }
 
 // Visit mocks base method.

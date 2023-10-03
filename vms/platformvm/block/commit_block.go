@@ -18,7 +18,9 @@ var (
 func NewBanffCommit(timestamp time.Time, parentID ids.ID, height uint64) (*BanffCommit, error) {
 	blk := &BanffCommit{
 		banffData: banffData{
-			Time: timestamp,
+			banffDataFields: banffDataFields{
+				Time: timestamp,
+			},
 		},
 	}
 

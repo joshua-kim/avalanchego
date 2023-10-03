@@ -42,7 +42,7 @@ func TestStandardBlocks(t *testing.T) {
 		// compare content
 		require.Equal(apricotStandardBlk.ID, parsedApricotStandardBlk.ID)
 		require.Equal(apricotStandardBlk.Bytes, parsedApricotStandardBlk.Bytes)
-		require.Equal(apricotStandardBlk.ParentID, parsedApricotStandardBlk.ParentID)
+		require.Equal(apricotStandardBlk.Parent, parsedApricotStandardBlk.Parent)
 		require.Equal(apricotStandardBlk.Height, parsedApricotStandardBlk.Height)
 		require.Equal(txs, parsedApricotStandardBlk.Txs)
 
@@ -59,7 +59,7 @@ func TestStandardBlocks(t *testing.T) {
 		// compare content
 		require.Equal(banffStandardBlk.ID, parsedBanffStandardBlk.ID)
 		require.Equal(banffStandardBlk.Bytes, parsedBanffStandardBlk.Bytes)
-		require.Equal(banffStandardBlk.ParentID, parsedBanffStandardBlk.ParentID)
+		require.Equal(banffStandardBlk.Parent, parsedBanffStandardBlk.Parent)
 		require.Equal(banffStandardBlk.Height, parsedBanffStandardBlk.Height)
 		require.Equal(banffStandardBlk.Txs, parsedBanffStandardBlk.Txs)
 		require.Equal(banffStandardBlk.Time, parsedBanffStandardBlk.Time)
@@ -93,7 +93,7 @@ func TestProposalBlocks(t *testing.T) {
 		// compare content
 		require.Equal(apricotProposalBlk.ID, parsedApricotProposalBlk.ID)
 		require.Equal(apricotProposalBlk.Bytes, parsedApricotProposalBlk.Bytes)
-		require.Equal(apricotProposalBlk.ParentID, parsedApricotProposalBlk.ParentID)
+		require.Equal(apricotProposalBlk.Parent, parsedApricotProposalBlk.Parent)
 		require.Equal(apricotProposalBlk.Height, parsedApricotProposalBlk.Height)
 		require.Equal(apricotProposalBlk.Txs, parsedApricotProposalBlk.Txs)
 
@@ -114,9 +114,9 @@ func TestProposalBlocks(t *testing.T) {
 		// compare content
 		require.Equal(banffProposalBlk.ID, parsedBanffProposalBlk.ID)
 		require.Equal(banffProposalBlk.Bytes, parsedBanffProposalBlk.Bytes)
-		require.Equal(banffProposalBlk.ParentID, parsedBanffProposalBlk.ParentID)
+		require.Equal(banffProposalBlk.Parent, parsedBanffProposalBlk.Parent)
 		require.Equal(banffProposalBlk.Height, parsedBanffProposalBlk.Height)
-		require.Equal(banffProposalBlk.Txs, parsedBanffProposalBlk.Txs)
+		require.Equal(banffProposalBlk.Transactions, parsedBanffProposalBlk.Transactions)
 		require.Equal(banffProposalBlk.Time, parsedBanffProposalBlk.Time)
 	}
 }
@@ -142,7 +142,7 @@ func TestCommitBlock(t *testing.T) {
 		// compare content
 		require.Equal(apricotCommitBlk.ID, parsedApricotCommitBlk.ID)
 		require.Equal(apricotCommitBlk.Bytes, parsedApricotCommitBlk.Bytes)
-		require.Equal(apricotCommitBlk.ParentID, parsedApricotCommitBlk.ParentID)
+		require.Equal(apricotCommitBlk.Parent, parsedApricotCommitBlk.Parent)
 		require.Equal(apricotCommitBlk.Height, parsedApricotCommitBlk.Height)
 
 		// check that banff commit block can be built and parsed
@@ -158,7 +158,7 @@ func TestCommitBlock(t *testing.T) {
 		// compare content
 		require.Equal(banffCommitBlk.ID, parsedBanffCommitBlk.ID)
 		require.Equal(banffCommitBlk.Bytes, parsedBanffCommitBlk.Bytes)
-		require.Equal(banffCommitBlk.ParentID, parsedBanffCommitBlk.ParentID)
+		require.Equal(banffCommitBlk.Parent, parsedBanffCommitBlk.Parent)
 		require.Equal(banffCommitBlk.Height, parsedBanffCommitBlk.Height)
 		require.Equal(banffCommitBlk.Time, parsedBanffCommitBlk.Time)
 	}
@@ -185,7 +185,7 @@ func TestAbortBlock(t *testing.T) {
 		// compare content
 		require.Equal(apricotAbortBlk.ID, parsedApricotAbortBlk.ID)
 		require.Equal(apricotAbortBlk.Bytes, parsedApricotAbortBlk.Bytes)
-		require.Equal(apricotAbortBlk.ParentID, parsedApricotAbortBlk.ParentID)
+		require.Equal(apricotAbortBlk.Parent, parsedApricotAbortBlk.Parent)
 		require.Equal(apricotAbortBlk.Height, parsedApricotAbortBlk.Height)
 
 		// check that banff abort block can be built and parsed
@@ -201,7 +201,7 @@ func TestAbortBlock(t *testing.T) {
 		// compare content
 		require.Equal(banffAbortBlk.ID, parsedBanffAbort.ID)
 		require.Equal(banffAbortBlk.Bytes, parsedBanffAbort.Bytes)
-		require.Equal(banffAbortBlk.ParentID, parsedBanffAbort.ParentID)
+		require.Equal(banffAbortBlk.Parent, parsedBanffAbort.Parent)
 		require.Equal(banffAbortBlk.Height, parsedBanffAbort.Height)
 
 		// timestamp check for banff blocks only
@@ -237,7 +237,7 @@ func TestAtomicBlock(t *testing.T) {
 		// compare content
 		require.Equal(atomicBlk.ID, parsedAtomicBlk.ID)
 		require.Equal(atomicBlk.Bytes, parsedAtomicBlk.Bytes)
-		require.Equal(atomicBlk.ParentID, parsedAtomicBlk.ParentID)
+		require.Equal(atomicBlk.Parent, parsedAtomicBlk.Parent)
 		require.Equal(atomicBlk.Height, parsedAtomicBlk.Height)
 		require.Equal(atomicBlk.Tx, parsedAtomicBlk.Tx)
 	}

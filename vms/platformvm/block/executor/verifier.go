@@ -51,7 +51,7 @@ func (v *verifier) BanffCommitBlock(b *block.BanffCommit) error {
 }
 
 func (v *verifier) BanffProposalBlock(b *block.BanffProposal) error {
-	if len(b.Txs) != 0 {
+	if len(b.Transactions) != 0 {
 		return errBanffProposalBlockWithMultipleTransactions
 	}
 
@@ -59,7 +59,7 @@ func (v *verifier) BanffProposalBlock(b *block.BanffProposal) error {
 		return err
 	}
 
-	parentID := b.ParentID()
+	parentID := b.Parent()
 	onCommitState, err := state.NewDiff(parentID, v.backend)
 	if err != nil {
 		return err
@@ -94,7 +94,7 @@ func (v *verifier) BanffStandardBlock(b *block.BanffStandard) error {
 		return err
 	}
 
-	parentID := b.ParentID()
+	parentID := b.Parent()
 	onAcceptState, err := state.NewDiff(parentID, v.backend)
 	if err != nil {
 		return err
@@ -142,7 +142,7 @@ func (v *verifier) ApricotProposalBlock(b *block.ApricotProposal) error {
 		return err
 	}
 
-	parentID := b.ParentID()
+	parentID := b.Parent()
 	onCommitState, err := state.NewDiff(parentID, v.backend)
 	if err != nil {
 		return err
@@ -160,7 +160,7 @@ func (v *verifier) ApricotStandardBlock(b block.Txs) error {
 		return err
 	}
 
-	parentID := b.ParentID()
+	parentID := b.Parent()
 	onAcceptState, err := state.NewDiff(parentID, v)
 	if err != nil {
 		return err
@@ -177,7 +177,7 @@ func (v *verifier) ApricotAtomicBlock(b *block.ApricotAtomic) error {
 		return err
 	}
 
-	parentID := b.ParentID()
+	parentID := b.Parent()
 	currentTimestamp := v.getTimestamp(parentID)
 	cfg := v.txExecutorBackend.Config
 	if cfg.IsApricotPhase5Activated(currentTimestamp) {
@@ -231,7 +231,7 @@ func (v *verifier) banffOptionBlock(b block.Banff) error {
 	// BanffProposal. This means that the timestamp must be
 	// standardized to a specific value. Therefore, we require the timestamp to
 	// be equal to the parents timestamp.
-	parentID := b.ParentID()
+	parentID := b.Parent()
 	parentBlkTime := v.getTimestamp(parentID)
 	blkTime := b.Time()
 	if !blkTime.Equal(parentBlkTime) {
@@ -250,7 +250,7 @@ func (v *verifier) banffNonOptionBlock(b block.Banff) error {
 		return err
 	}
 
-	parentID := b.ParentID()
+	parentID := b.Parent()
 	parentState, ok := v.GetState(parentID)
 	if !ok {
 		return fmt.Errorf("%w: %s", state.ErrMissingParentState, parentID)
@@ -289,7 +289,7 @@ func (v *verifier) apricotCommonBlock(b block.Interface) error {
 	// the parent ApricotProposal must include an AdvanceTimeTx with a
 	// timestamp after the Banff timestamp. This is verified not to occur
 	// during the verification of the ProposalBlock.
-	parentID := b.ParentID()
+	parentID := b.Parent()
 	timestamp := v.getTimestamp(parentID)
 	if v.txExecutorBackend.Config.IsBanffActivated(timestamp) {
 		return fmt.Errorf("%w: timestamp = %s", errApricotBlockIssuedAfterFork, timestamp)
@@ -298,7 +298,7 @@ func (v *verifier) apricotCommonBlock(b block.Interface) error {
 }
 
 func (v *verifier) commonBlock(b block.Interface) error {
-	parentID := b.ParentID()
+	parentID := b.Parent()
 	parent, err := v.GetBlock(parentID)
 	if err != nil {
 		return err
@@ -319,7 +319,7 @@ func (v *verifier) commonBlock(b block.Interface) error {
 
 // abortBlock populates the state of this block if [nil] is returned
 func (v *verifier) abortBlock(b block.Interface) error {
-	parentID := b.ParentID()
+	parentID := b.Parent()
 	onAcceptState, ok := v.getOnAbortState(parentID)
 	if !ok {
 		return fmt.Errorf("%w: %s", state.ErrMissingParentState, parentID)
@@ -336,7 +336,7 @@ func (v *verifier) abortBlock(b block.Interface) error {
 
 // commitBlock populates the state of this block if [nil] is returned
 func (v *verifier) commitBlock(b block.Interface) error {
-	parentID := b.ParentID()
+	parentID := b.Parent()
 	onAcceptState, ok := v.getOnCommitState(parentID)
 	if !ok {
 		return fmt.Errorf("%w: %s", state.ErrMissingParentState, parentID)
@@ -471,7 +471,7 @@ func (v *verifier) verifyUniqueInputs(block block.Interface, inputs set.Set[ids.
 
 	// Check for conflicts in ancestors.
 	for {
-		parentID := block.ParentID()
+		parentID := block.Parent()
 		parentState, ok := v.blkIDToState[parentID]
 		if !ok {
 			// The parent state isn't pinned in memory.

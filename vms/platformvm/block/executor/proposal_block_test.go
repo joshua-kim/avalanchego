@@ -361,7 +361,7 @@ func TestBanffProposalBlockTimeVerification(t *testing.T) {
 		)
 		require.NoError(err)
 
-		statelessProposalBlock.Txs = []*txs.Tx{blkTx}
+		statelessProposalBlock.Transactions = []*txs.Tx{blkTx}
 		block := env.blkManager.NewBlock(statelessProposalBlock)
 		err = block.Verify(context.Background())
 		require.ErrorIs(err, errBanffProposalBlockWithMultipleTransactions)

@@ -84,7 +84,7 @@ func (b *Block) Timestamp() time.Time {
 
 func (b *Block) Options(context.Context) ([2]snowman.Block, error) {
 	options := options{}
-	if err := b.Interface.Visit(&options); err != nil {
+	if err := b.Visit(&options); err != nil {
 		return [2]snowman.Block{}, err
 	}
 

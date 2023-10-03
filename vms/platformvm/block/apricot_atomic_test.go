@@ -45,6 +45,6 @@ func TestNewApricotAtomicBlock(t *testing.T) {
 	require.NotEmpty(blk.Tx.Bytes())
 	require.NotEqual(ids.Empty, blk.Tx.ID())
 	require.Equal(tx.Bytes(), blk.Tx.Bytes())
-	require.Equal(parentID, blk.ParentID)
+	require.Equal(parentID, blk.Parent)
 	require.Equal(height, blk.Height)
 }

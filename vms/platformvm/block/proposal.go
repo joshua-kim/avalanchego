@@ -40,11 +40,11 @@ type BanffProposal struct {
 	//
 	// TODO: when Txs is used, we must correctly verify and apply their
 	//       changes.
-	Txs []*txs.Tx `serialize:"true" json:"-"`
+	Transactions []*txs.Tx `serialize:"true" json:"-"`
 }
 
 func (b *BanffProposal) InitCtx(ctx *snow.Context) {
-	for _, tx := range b.Txs {
+	for _, tx := range b.Transactions {
 		tx.Unsigned.InitCtx(ctx)
 	}
 
@@ -58,7 +58,9 @@ func (b *BanffProposal) Visit(v Visitor) error {
 func NewBanffProposalBlock(time time.Time, parentID ids.ID, height uint64, tx *txs.Tx) (*BanffProposal, error) {
 	blk := &BanffProposal{
 		banffData: banffData{
-			Time: time,
+			banffDataFields: banffDataFields{
+				Time: time,
+			},
 		},
 		proposal: proposal{
 			proposalFields: proposalFields{
@@ -81,8 +83,8 @@ func NewApricotProposal(
 	blk := &ApricotProposal{
 		data: data{
 			dataFields: dataFields{
-				ParentID: parentID,
-				Height:   height,
+				Parent: parentID,
+				Height: height,
 			},
 		},
 		proposal: proposal{

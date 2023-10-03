@@ -108,7 +108,7 @@ func (a *acceptor) ApricotAtomicBlock(b *block.ApricotAtomic) error {
 		zap.String("blockType", "apricot atomic"),
 		zap.Stringer("blkID", blkID),
 		zap.Uint64("height", b.Height()),
-		zap.Stringer("parentID", b.ParentID()),
+		zap.Stringer("parentID", b.Parent()),
 		zap.Stringer("utxoChecksum", a.state.Checksum()),
 	)
 
@@ -116,7 +116,7 @@ func (a *acceptor) ApricotAtomicBlock(b *block.ApricotAtomic) error {
 }
 
 func (a *acceptor) abortBlock(b block.Interface, blockType string) error {
-	parentID := b.ParentID()
+	parentID := b.Parent()
 	parentState, ok := a.blkIDToState[parentID]
 	if !ok {
 		return fmt.Errorf("%w: %s", state.ErrMissingParentState, parentID)
@@ -134,7 +134,7 @@ func (a *acceptor) abortBlock(b block.Interface, blockType string) error {
 }
 
 func (a *acceptor) commitBlock(b block.Interface, blockType string) error {
-	parentID := b.ParentID()
+	parentID := b.Parent()
 	parentState, ok := a.blkIDToState[parentID]
 	if !ok {
 		return fmt.Errorf("%w: %s", state.ErrMissingParentState, parentID)
@@ -220,7 +220,7 @@ func (a *acceptor) proposalBlock(b block.data, blockType string) {
 		zap.String("blockType", blockType),
 		zap.Stringer("blkID", blkID),
 		zap.Uint64("height", b.Height()),
-		zap.Stringer("parentID", b.ParentID()),
+		zap.Stringer("parentID", b.Parent()),
 		zap.Stringer("utxoChecksum", a.state.Checksum()),
 	)
 }
@@ -267,7 +267,7 @@ func (a *acceptor) standardBlock(b block.Interface, blockType string) error {
 		zap.String("blockType", blockType),
 		zap.Stringer("blkID", blkID),
 		zap.Uint64("height", b.Height()),
-		zap.Stringer("parentID", b.ParentID()),
+		zap.Stringer("parentID", b.Parent()),
 		zap.Stringer("utxoChecksum", a.state.Checksum()),
 	)
 

@@ -68,17 +68,17 @@ func (m *blockMetrics) BanffCommitBlock(*block.BanffCommit) error {
 
 func (m *blockMetrics) BanffProposalBlock(b *block.BanffProposal) error {
 	m.numProposalBlocks.Inc()
-	for _, tx := range b.Txs {
+	for _, tx := range b.Transactions {
 		if err := tx.Unsigned.Visit(m.txMetrics); err != nil {
 			return err
 		}
 	}
-	return b.Txs.Unsigned.Visit(m.txMetrics)
+	return b.Tx.Unsigned.Visit(m.txMetrics)
 }
 
 func (m *blockMetrics) BanffStandardBlock(b *block.BanffStandard) error {
 	m.numStandardBlocks.Inc()
-	for _, tx := range b.Txs {
+	for _, tx := range b.Txs() {
 		if err := tx.Unsigned.Visit(m.txMetrics); err != nil {
 			return err
 		}
@@ -98,12 +98,12 @@ func (m *blockMetrics) ApricotCommitBlock(*block.ApricotCommit) error {
 
 func (m *blockMetrics) ApricotProposalBlock(b *block.ApricotProposal) error {
 	m.numProposalBlocks.Inc()
-	return b.Txs.Unsigned.Visit(m.txMetrics)
+	return b.Tx.Unsigned.Visit(m.txMetrics)
 }
 
 func (m *blockMetrics) ApricotStandardBlock(b *block.ApricotStandard) error {
 	m.numStandardBlocks.Inc()
-	for _, tx := range b.Txs {
+	for _, tx := range b.Txs() {
 		if err := tx.Unsigned.Visit(m.txMetrics); err != nil {
 			return err
 		}

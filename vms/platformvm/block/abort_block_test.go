@@ -29,7 +29,7 @@ func TestNewBanffAbortBlock(t *testing.T) {
 	require.NotEmpty(blk.Bytes)
 
 	require.Equal(timestamp, blk.Time)
-	require.Equal(parentID, blk.ParentID)
+	require.Equal(parentID, blk.Parent)
 	require.Equal(height, blk.Height)
 }
 
@@ -47,6 +47,6 @@ func TestNewApricotAbortBlock(t *testing.T) {
 	// Make sure the block is initialized
 	require.NotEmpty(blk.Bytes)
 
-	require.Equal(parentID, blk.ParentID)
+	require.Equal(parentID, blk.Parent)
 	require.Equal(height, blk.Height)
 }

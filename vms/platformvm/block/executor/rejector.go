@@ -19,8 +19,8 @@ type rejector struct {
 	addTxsToMempool bool
 }
 
-func (r *rejector) BanffAbort(b block.Banff) error {
-	return r.rejectBlock(b.Data, "banff abort")
+func (r *rejector) BanffAbort(b *block.BanffAbort) error {
+	return r.rejectBlock(b, "banff abort")
 }
 
 func (r *rejector) BanffCommitBlock(b block.Banff) error {
@@ -43,28 +43,28 @@ func (r *rejector) ApricotCommitBlock(b block.data) error {
 	return r.rejectBlock(b, "apricot commit")
 }
 
-func (r *rejector) ApricotProposalBlock(b block.data) error {
+func (r *rejector) ApricotProposalBlock(b *block.ApricotProposal) error {
 	return r.rejectBlock(b, "apricot proposal")
 }
 
-func (r *rejector) ApricotStandardBlock(b block.data) error {
+func (r *rejector) ApricotStandardBlock(b *block.ApricotStandard) error {
 	return r.rejectBlock(b, "apricot standard")
 }
 
-func (r *rejector) ApricotAtomicBlock(b block.data) error {
+func (r *rejector) ApricotAtomicBlock(b *block.ApricotAtomic) error {
 	return r.rejectBlock(b, "apricot atomic")
 }
 
-func (r *rejector) rejectBlock(b block.data, blockType string) error {
-	blkID := b.ID
+func (r *rejector) rejectBlock(b block.Txs, blockType string) error {
+	blkID := b.ID()
 	defer r.free(blkID)
 
 	r.ctx.Log.Verbo(
 		"rejecting block",
 		zap.String("blockType", blockType),
 		zap.Stringer("blkID", blkID),
-		zap.Uint64("height", b.Height),
-		zap.Stringer("parentID", b.ParentID),
+		zap.Uint64("height", b.Height()),
+		zap.Stringer("parentID", b.Parent()),
 	)
 
 	if !r.addTxsToMempool {

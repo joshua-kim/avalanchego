@@ -18,7 +18,9 @@ var (
 func NewBanffAbort(time time.Time, parentID ids.ID, height uint64) (*BanffAbort, error) {
 	blk := &BanffAbort{
 		banffData: banffData{
-			Time: time,
+			banffDataFields: banffDataFields{
+				Time: time,
+			},
 		},
 	}
 

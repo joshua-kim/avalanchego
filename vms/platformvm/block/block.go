@@ -18,7 +18,7 @@ type Interface interface {
 	snow.ContextInitializable
 
 	ID() ids.ID
-	ParentID() ids.ID
+	Parent() ids.ID
 	Height() uint64
 	Bytes() []byte
 
@@ -45,10 +45,10 @@ func newData(block Interface, parentID ids.ID, height uint64) (data, error) {
 
 	return data{
 		dataFields: dataFields{
-			ID:       id,
-			ParentID: parentID,
-			Height:   height,
-			Bytes:    bytes,
+			ID:     id,
+			Parent: parentID,
+			Height: height,
+			Bytes:  bytes,
 		},
 	}, nil
 }
@@ -61,8 +61,8 @@ func (d data) ID() ids.ID {
 	return d.dataFields.ID
 }
 
-func (d data) ParentID() ids.ID {
-	return d.dataFields.ParentID
+func (d data) Parent() ids.ID {
+	return d.dataFields.Parent
 }
 
 func (d data) Height() uint64 {
@@ -75,10 +75,10 @@ func (d data) Bytes() []byte {
 
 // non-exported so function names on the interface don't collide with field names
 type dataFields struct {
-	ID       ids.ID `serialize:"true"`
-	ParentID ids.ID `serialize:"true" json:"parentID"`
-	Height   uint64 `serialize:"true"`
-	Bytes    []byte `serialize:"true"`
+	ID     ids.ID `serialize:"true"`
+	Parent ids.ID `serialize:"true" json:"parentID"`
+	Height uint64 `serialize:"true"`
+	Bytes  []byte `serialize:"true"`
 }
 
 type banffData struct {

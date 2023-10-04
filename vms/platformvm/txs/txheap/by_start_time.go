@@ -4,6 +4,8 @@
 package txheap
 
 import (
+	"github.com/ava-labs/avalanchego/ids"
+	"github.com/ava-labs/avalanchego/utils/heap"
 	"time"
 
 	"github.com/ava-labs/avalanchego/vms/platformvm/txs"
@@ -22,15 +24,13 @@ type byStartTime struct {
 }
 
 func NewByStartTime() TimedHeap {
-	h := &byStartTime{}
-	h.initialize(h)
-	return h
-}
-
-func (h *byStartTime) Less(i, j int) bool {
-	iTime := h.txs[i].tx.Unsigned.(txs.Staker).StartTime()
-	jTime := h.txs[j].tx.Unsigned.(txs.Staker).StartTime()
-	return iTime.Before(jTime)
+	return &byStartTime{
+		txHeap: txHeap{
+			heap: heap.NewMap[ids.ID, heapTx](func(a, b heapTx) bool {
+				return a.tx.Unsigned.(txs.Staker).StartTime().Before(b.tx.Unsigned.(txs.Staker).StartTime())
+			}),
+		},
+	}
 }
 
 func (h *byStartTime) Timestamp() time.Time {
